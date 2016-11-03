@@ -35,16 +35,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //security access
-        http.authorizeRequests().antMatchers("/demo").permitAll();
-        http.authorizeRequests().antMatchers("/**").authenticated();
-        //http.authorizeRequests().antMatchers("/register").permitAll();
-
-        //authentification config
-        http.httpBasic();
-
-
-        //non-browser clients disable
+//        http.authorizeRequests().antMatchers("/demo").permitAll();
+//        http.authorizeRequests().antMatchers("/**").authenticated();
+//        http.formLogin()
+//                .loginPage("/login")
+//                .usernameParameter("username")
+//                .passwordParameter("password")
+//                .permitAll();
+//
+//        http.logout()
+//                .logoutUrl("/logout")
+//                .permitAll();
+//
         http.csrf().disable();
     }
 
@@ -53,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO authentication should be more generic
         auth.jdbcAuthentication().dataSource(jdbcTemplate.getDataSource())
                 .usersByUsernameQuery("select username, password, 1 as enabled from mormont.users where username=?")
-                .authoritiesByUsernameQuery("select ? as username, \"ROLE_USER\" as authority");
+                .authoritiesByUsernameQuery("select ? as username, \"ROLE_ADMIN\" as authority");
     }
 
     @Bean
