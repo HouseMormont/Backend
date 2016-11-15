@@ -20,8 +20,7 @@ public class UserRepository {
         this.jdbcTemplate = jdbcTemplate;
         dbHelper=new DBHelper(jdbcTemplate);
 
-
-        System.out.print(DBHelper.findUsers("username","admin"));
+        //System.out.print(DBHelper.findUsers("username","admin"));
 
     }
 
