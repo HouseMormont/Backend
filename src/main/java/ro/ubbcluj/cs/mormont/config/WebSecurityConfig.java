@@ -46,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        http.logout()
 //                .logoutUrl("/logout")
 //                .permitAll();
-//
+
         http.csrf().disable();
     }
 
@@ -55,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //TODO authentication should be more generic
         auth.jdbcAuthentication().dataSource(jdbcTemplate.getDataSource())
                 .usersByUsernameQuery("select username, password, 1 as enabled from mormont.users where username=?")
-                .authoritiesByUsernameQuery("select ? as username, \"ROLE_ADMIN\" as authority");
+                .authoritiesByUsernameQuery("select username as user, authority as authority1 from mormont.users where username = ?");
     }
 
     @Bean
