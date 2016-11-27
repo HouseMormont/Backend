@@ -3,35 +3,35 @@ USE mormont;
 #DROP TABLE users;
 CREATE TABLE IF NOT EXISTS `Users` (
   id int AUTO_INCREMENT ,
-  username VARCHAR(50)  NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  departament INT NOT NULL ,
-  nume VARCHAR(20) NOT NULL ,
-  prenume VARCHAR(20) NOT NULL ,
-  authority int NOT NULL ,
+  username VARCHAR(50) ,
+  password VARCHAR(255),
+  departament INT ,
+  nume VARCHAR(20) ,
+  prenume VARCHAR(20) ,
+  authority int ,
 
 
   PRIMARY KEY (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `Functii`(
-  id_functie int NOT NULL ,
-  denumire VARCHAR(30) NOT NULL ,
+  id_functie int ,
+  denumire VARCHAR(30) ,
 
   PRIMARY KEY (id_functie)
 );
 
 CREATE TABLE IF NOT EXISTS `Facultati`(
-  id_facultate int NOT NULL ,
-  denumire VARCHAR(60) NOT NULL ,
+  id_facultate int ,
+  denumire VARCHAR(60) ,
 
   PRIMARY KEY (id_facultate)
 );
 
 CREATE TABLE IF NOT EXISTS `Departamente`(
-  id_departament int NOT NULL ,
-  denumire VARCHAR(60) NOT NULL ,
-  facultate INT NOT NULL,
+  id_departament int ,
+  denumire VARCHAR(60) ,
+  facultate INT,
 
   PRIMARY KEY (id_departament),
   FOREIGN KEY (facultate) REFERENCES Facultati(id_facultate)
@@ -39,21 +39,21 @@ CREATE TABLE IF NOT EXISTS `Departamente`(
 );
 
 CREATE TABLE IF NOT EXISTS `Mijloace_de_transport`(
-  id_mijloc int NOT NULL ,
-  denumire VARCHAR(20) NOT NULL ,
+  id_mijloc int ,
+  denumire VARCHAR(20) ,
 
   PRIMARY KEY (id_mijloc)
 );
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_tip_solicitant`(
-  id INT NOT NULL,
-  descriere VARCHAR(100) NOT NULL ,
+  id INT,
+  descriere VARCHAR(100) ,
 
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_tip_avizare`(
-  id INT NOT NULL ,
+  id INT ,
   descriere VARCHAR(50),
 
   PRIMARY KEY (id)
@@ -61,9 +61,9 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_tip_avizare`(
 );
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Flux`(
-  id INT NOT NULL ,
-  id_tip_solicitant INT NOT NULL ,
-  id_tip_avizare INT NOT NULL ,
+  id INT ,
+  id_tip_solicitant INT ,
+  id_tip_avizare INT ,
 
   PRIMARY KEY (id),
   FOREIGN KEY (id_tip_avizare) REFERENCES Dispozitia_Rectorului_tip_avizare(id),
@@ -75,31 +75,33 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului`(
 
   id_dispozitie int NOT NULL ,
   versiune FLOAT NOT NULL ,
+  username VARCHAR(20) NOT NULL ,
 
-  nume VARCHAR(20) NOT NULL ,
-  prenume VARCHAR(20) NOT NULL ,
+  nume VARCHAR(20) ,
+  prenume VARCHAR(20) ,
 
-  id_flux INT NOT NULL ,
-  status_flux INT NOT NULL , # -1 - Rejected
+
+  id_flux INT ,
+  status_flux INT , # -1 - Rejected
                              # 0 -  Pending/Waiting
                              # 1 -  Approved
 
 
-  functia int NOT NULL,
-  departament int NOT NULL ,
+  functia int,
+  departament int ,
 
-  ruta VARCHAR(255) NOT NULL ,
-  data_inceput VARCHAR(11) NOT NULL ,
-  data_sfarsit VARCHAR(11) NOT NULL ,
-  mijloc_transport INT NOT NULL,
-  numar_telefon VARCHAR(20) NOT NULL,
-  email VARCHAR(30) NOT NULL ,
-  scopul VARCHAR(255) NOT NULL ,
+  ruta VARCHAR(255) ,
+  data_inceput VARCHAR(11) ,
+  data_sfarsit VARCHAR(11) ,
+  mijloc_transport INT,
+  numar_telefon VARCHAR(20),
+  email VARCHAR(30) ,
+  scopul VARCHAR(255) ,
   suma_avans FLOAT ,
-  data_cererii VARCHAR(11) NOT NULL ,
-  nume_director_departament VARCHAR(40) NOT NULL ,
-  nume_decan VARCHAR(40) NOT NULL ,
-  nume_director_proiect VARCHAR(40) NOT NULL ,
+  data_cererii VARCHAR(11) ,
+  nume_director_departament VARCHAR(40) ,
+  nume_decan VARCHAR(40) ,
+  nume_director_proiect VARCHAR(40) ,
   nume_director_scoala_doctorala VARCHAR(40) ,
 
 
@@ -112,8 +114,8 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului`(
 );
 
 CREATE TABLE IF NOT EXISTS `Valute`(
-  id_valuta int NOT NULL ,
-  denumire VARCHAR(20) NOT NULL ,
+  id_valuta int ,
+  denumire VARCHAR(20) ,
 
   PRIMARY KEY (id_valuta)
 
@@ -121,8 +123,8 @@ CREATE TABLE IF NOT EXISTS `Valute`(
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Transport`(
 
-  id_dispozitie int NOT NULL ,
-  versiune FLOAT NOT NULL ,
+  id_dispozitie int ,
+  versiune FLOAT ,
 
   suma_atm FLOAT ,
   valuta_atm INT ,
@@ -155,8 +157,8 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Transport`(
 
 
 CREATE TABLE IF NOT EXISTS Dispozitia_Rectorului_diurna (
-  id_dispozitie int NOT NULL ,
-  versiune FLOAT NOT NULL ,
+  id_dispozitie int ,
+  versiune FLOAT ,
 
   suma_diurna FLOAT  ,
   numar_zile_diurna INT  ,
@@ -185,8 +187,8 @@ CREATE TABLE IF NOT EXISTS Dispozitia_Rectorului_diurna (
 );
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Cazare`(
-  id_dispozitie int NOT NULL ,
-  versiune FLOAT NOT NULL ,
+  id_dispozitie int ,
+  versiune FLOAT ,
 
   suma_destinatie FLOAT  ,
   numar_zile_destinatie INT  ,
@@ -207,8 +209,8 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Cazare`(
 );
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Altele`(
-  id_dispozitie int NOT NULL ,
-  versiune FLOAT NOT NULL ,
+  id_dispozitie int ,
+  versiune FLOAT ,
 
   suma_conferinta FLOAT,
   valuta_conferinta INT,
@@ -260,17 +262,17 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Altele`(
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Declaratie`(
 
-  id_dispozitie int NOT NULL ,
-  versiune FLOAT NOT NULL ,
-  nume VARCHAR(20) NOT NULL ,
-  prenume VARCHAR(20) NOT NULL ,
-  destinatie VARCHAR(30) NOT NULL ,
-  data_inceput VARCHAR(11) NOT NULL ,
-  data_sfarsit VARCHAR(11) NOT NULL ,
-  data_plecare VARCHAR(11) NOT NULL,
-  data_curenta VARCHAR(11) NOT NULL,
-  data_sosire VARCHAR(11) NOT NULL ,
-  suma FLOAT NOT NULL ,
+  id_dispozitie int ,
+  versiune FLOAT ,
+  nume VARCHAR(20) ,
+  prenume VARCHAR(20) ,
+  destinatie VARCHAR(30) ,
+  data_inceput VARCHAR(11) ,
+  data_sfarsit VARCHAR(11) ,
+  data_plecare VARCHAR(11),
+  data_curenta VARCHAR(11),
+  data_sosire VARCHAR(11) ,
+  suma FLOAT ,
   suma_autoturism FLOAT ,
 
 
@@ -280,15 +282,15 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Declaratie`(
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Date_Virament` (
 
-  id_dispozitie int NOT NULL ,
-  versiune FLOAT NOT NULL ,
-  nume VARCHAR(20) NOT NULL ,
-  prenume VARCHAR(20) NOT NULL ,
-  cnp VARCHAR(20) NOT NULL ,
-  domiciliu VARCHAR(50) NOT NULL ,
-  nume_banca VARCHAR(20) NOT NULL ,
-  iban VARCHAR(20) NOT NULL ,
-  data VARCHAR(11) NOT NULL ,
+  id_dispozitie int ,
+  versiune FLOAT ,
+  nume VARCHAR(20) ,
+  prenume VARCHAR(20) ,
+  cnp VARCHAR(20) ,
+  domiciliu VARCHAR(50) ,
+  nume_banca VARCHAR(20) ,
+  iban VARCHAR(20) ,
+  data VARCHAR(11) ,
 
   PRIMARY KEY (id_dispozitie,versiune)
 
@@ -297,13 +299,13 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Date_Virament` (
 
 /*CREATE TABLE IF NOT EXISTS `Referat_Necesitate`(
 
-  id_referat int NOT NULL ,
-  versiune FLOAT NOT NULL ,
+  id_referat int ,
+  versiune FLOAT ,
 
 
 
-  departament INT NOT NULL ,
-  numar_inregistrare VARCHAR(10) NOT NULL ,
+  departament INT ,
+  numar_inregistrare VARCHAR(10) ,
 
 
 

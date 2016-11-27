@@ -7,6 +7,7 @@ public class DispozitiaRectorului {
 
     private int idDispozitie;
     private float versiune;
+    private String username;
 
     private DetaliiGenerale detaliiGenerale;
     private DetaliiTransport detaliiTransport;
@@ -22,9 +23,10 @@ public class DispozitiaRectorului {
     private String numeDirectorProiect;
     private String numeDirectorScoalaDoctorala;
 
-    public DispozitiaRectorului(int idDispozitie, float versiune, DetaliiGenerale detaliiGenerale, DetaliiTransport detaliiTransport, DetaliiDiurna detaliiDiurna, DetaliiCazare detaliiCazare, AlteCheltuieli alteCheltuieli, float sumaAvansSolicitat, String dataCererii, String numeDirectorDepartament, String numeDecan, String numeDirectorProiect, String numeDirectorScoalaDoctorala) {
+    public DispozitiaRectorului(int idDispozitie, float versiune, String username, DetaliiGenerale detaliiGenerale, DetaliiTransport detaliiTransport, DetaliiDiurna detaliiDiurna, DetaliiCazare detaliiCazare, AlteCheltuieli alteCheltuieli, float sumaAvansSolicitat, String dataCererii, String numeDirectorDepartament, String numeDecan, String numeDirectorProiect, String numeDirectorScoalaDoctorala) {
         this.idDispozitie = idDispozitie;
         this.versiune = versiune;
+        this.username = username;
         this.detaliiGenerale = detaliiGenerale;
         this.detaliiTransport = detaliiTransport;
         this.detaliiDiurna = detaliiDiurna;
@@ -141,5 +143,13 @@ public class DispozitiaRectorului {
 
     public void setNumeDirectorScoalaDoctorala(String numeDirectorScoalaDoctorala) {
         this.numeDirectorScoalaDoctorala = numeDirectorScoalaDoctorala;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
