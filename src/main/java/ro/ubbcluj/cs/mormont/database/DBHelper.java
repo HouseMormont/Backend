@@ -15,7 +15,6 @@ public class DBHelper {
     private static DBHelper mInstance;
     private static JdbcTemplate jdbcTemplate;
 
-
     String sql = "INSERT INTO mormont.users (username, password) VALUES (?,?)";
 
     public static DBHelper getInstance(JdbcTemplate jdbcTemplate){
