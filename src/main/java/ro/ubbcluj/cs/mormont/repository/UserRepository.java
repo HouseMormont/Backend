@@ -18,7 +18,7 @@ public class UserRepository {
     @Autowired
     public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        dbHelper=new DBHelper(jdbcTemplate);
+        dbHelper=DBHelper.getInstance(jdbcTemplate);
 
         //System.out.print(DBHelper.findUsers("username","admin"));
 
