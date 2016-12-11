@@ -11,9 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
 import ro.ubbcluj.cs.mormont.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +42,7 @@ public class Controller {
     private static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     private static final String TEST_LOGIN = "/check_login";
     private static final String AUTHORIZATION = "/login";
+    public static final String AUTH_COOKIE = "AUTH_COOKIE";
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
 
@@ -63,7 +66,7 @@ public class Controller {
     }
 
     @RequestMapping(value = AUTHORIZATION, produces = "application/json", method = POST)
-    public ResponseEntity<String> login(HttpServletRequest request) {
+    public ResponseEntity<String> login(HttpServletRequest request, HttpServletResponse httpServletResponse) {
         //FIXME discuss what we should log and what not because currently we might have too many logs
         try {
             //FIXME plain text credentials!!!!
@@ -85,8 +88,11 @@ public class Controller {
             User user = new User(username, password, authenticate.getAuthorities());
 
             LOGGER.log(Level.ALL, "Username {0} authenticated with success", new Object[]{username});
-
             JsonObject response = getAuthDetails(user);
+            //FIXME we should avoid this..
+            httpServletResponse.setHeader(AUTH_COOKIE, RequestContextHolder.currentRequestAttributes().getSessionId());
+            httpServletResponse.setHeader("Access-Control-Allow-Headers", AUTH_COOKIE);
+
             return new ResponseEntity<>(response.toString(), OK);
 
         } catch (Exception exception) {
