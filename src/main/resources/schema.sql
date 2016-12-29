@@ -14,8 +14,18 @@ CREATE TABLE IF NOT EXISTS `Users` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE IF NOT EXISTS `User_role` (
+  id int AUTO_INCREMENT,
+  rol VARCHAR(200),
+
+  PRIMARY KEY (`id`)
+);
+
+
+
+
 CREATE TABLE IF NOT EXISTS `Functii`(
-  id_functie int ,
+  id_functie int AUTO_INCREMENT,
   denumire VARCHAR(30) ,
 
   PRIMARY KEY (id_functie)
@@ -46,14 +56,14 @@ CREATE TABLE IF NOT EXISTS `Mijloace_de_transport`(
 );
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_tip_solicitant`(
-  id INT,
+  id INT AUTO_INCREMENT,
   descriere VARCHAR(100) ,
 
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_tip_avizare`(
-  id INT ,
+  id INT AUTO_INCREMENT,
   descriere VARCHAR(50),
 
   PRIMARY KEY (id)
@@ -61,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_tip_avizare`(
 );
 
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Flux`(
-  id INT ,
+  id INT AUTO_INCREMENT,
   id_tip_solicitant INT ,
   id_tip_avizare INT ,
 
@@ -71,7 +81,9 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Flux`(
 );
 
 
-CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului`(
+
+
+  CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului`(
 
   id_dispozitie int NOT NULL ,
   versiune FLOAT NOT NULL ,
@@ -316,7 +328,144 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Date_Virament` (
 
 );
 */
+/*
+Create document flow for "Dispozitia rectorului"
+ */
 
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Decan');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('DFC');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Imputernicit');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Rector');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Director de grant');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('CMCS');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Director proiect');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Director departament');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Director scoala doctorala');
+INSERT into Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Sef direct');
+
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Studenti (Fara finantare)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Studenti (Cu finantare, fonduri facultate)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Studenti (Cu finantare, fonduri universitate)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Studenti (Cu finantare din grant)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Studenti (Cu finantare din grant + facultate)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic (Fata finantare)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic (finantare facultate)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic (finantare grant)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic (finantare grant + facultate)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic (finantare universitate)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Angajat exclusiv proiect (Fara finantare)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Angajat exclusiv proiect (finantare grant)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic pensionar cu conducere de doctorat (Fara finantare)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic pensionar cu conducere de doctorat (finantare fonduri scoala doctorala)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic pensionar cu conducere de doctorat (finantare grant)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Cadru didactic pensionar cu conducere de doctorat (finantare scoala doctorala, facultate, grant)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Personal administrativ (fara finantare)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Personal administrativ (finantare fonduri facultate)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Personal administrativ (finantare grant)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Personal administrativ (finantare grant + facultate)');
+INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Personal administrativ (finantare universitate)');
+
+
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (1, 1);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (2, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (2, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (3, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (3, 4);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (4, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (4, 5);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (4, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (4, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (5, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (5, 7);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (5, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (5, 2);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (5, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (6, 8);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (7, 8);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (7, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (7, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (8, 8);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (8, 5);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (8, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (8, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (9, 8);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (9, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (9, 7);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (9, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (9, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (10, 8);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (10, 4);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (11, 7);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (12, 7);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (12, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (12, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (13, 9);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (14, 9);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (14, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (14, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (15, 9);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (15, 7);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (15, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (15, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (16, 9);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (16, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (16, 7);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (16, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (16, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (17, 10);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (18, 10);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (18, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (18, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (19, 10);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (19, 5);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (19, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (19, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (20, 10);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (20, 1);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (20, 7);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (20, 6);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (20, 2);
+
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (21, 10);
+INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUES (21, 4);
+
+
+
+
+CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Simple` (
+
+  id_dispozitie int,
+  versiune FLOAT,
+  id_user_solicitant INT, /* Tipul userului care initiaza cererea*/
+  id_aprobare INT, /* Id-ul aprobarii in asteptare*/
+
+  data VARCHAR(12),
+  documentJson MEDIUMTEXT, /*16,777,215 characters */
+
+  PRIMARY KEY (id_dispozitie,versiune)
+
+
+);
 
 
 
