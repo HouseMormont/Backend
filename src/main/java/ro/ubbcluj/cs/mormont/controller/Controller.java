@@ -26,6 +26,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static ro.ubbcluj.cs.mormont.entity.Headers.PASSWORD;
 import static ro.ubbcluj.cs.mormont.entity.Headers.USERNAME;
 import static ro.ubbcluj.cs.mormont.utils.InputsUtil.getRequiredHeader;
+import static ro.ubbcluj.cs.mormont.utils.InputsUtil.getRequiredJsonElementFromBody;
 import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.getAuthDetails;
 import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.getExceptionDetails;
 
@@ -39,6 +40,7 @@ import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.getExceptionDetails;
 public class Controller {
     private static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     private static final String TEST_LOGIN = "/check_login";
+    private static final String SAVE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/save";
     private static final String AUTHORIZATION = "/login";
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -57,6 +59,30 @@ public class Controller {
                 throw new Exception("Not authenticated");
             }
             return new ResponseEntity<>(String.format("Welcome %s", ((User)auth.getPrincipal()).getUsername()), HttpStatus.OK);
+        } catch (Exception exception) {
+            return new ResponseEntity<>("You are not authenticated", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    //TODO Remove this function
+    @RequestMapping(value = SAVE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
+    public ResponseEntity<String> saveDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+        try {
+            if(auth==null) {
+                return new ResponseEntity<>("You are not authenticated", HttpStatus.UNAUTHORIZED);
+            }
+            String jsonParamBody = request.getParameter("json");
+
+            String username = ((User)auth.getPrincipal()).getUsername();
+            String idDoc = getRequiredJsonElementFromBody(jsonParamBody, "idDoc");
+            String versionDoc = getRequiredJsonElementFromBody(jsonParamBody, "versionDoc");
+            String jsonDocument = getRequiredJsonElementFromBody(jsonParamBody, "jsonDoc");
+
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
         } catch (Exception exception) {
             return new ResponseEntity<>("You are not authenticated", HttpStatus.NOT_FOUND);
         }
