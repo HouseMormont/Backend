@@ -4,8 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static ro.ubbcluj.cs.mormont.entity.Responses.AUTHORITIES;
 import static ro.ubbcluj.cs.mormont.entity.Responses.MESSAGE;
 
@@ -26,6 +28,11 @@ public class OutputsUtil {
         result.addProperty(MESSAGE.getValue(), "Success");
         result.add(AUTHORITIES.getValue(), authorities);
         return result;
+    }
+
+    public static @NotNull ResponseEntity<String> getUnauthorizedResponse() {
+        // TODO should be json
+        return new ResponseEntity<>("You are not authenticated", UNAUTHORIZED);
     }
 
     @Contract("_->!null")
