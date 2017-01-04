@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.logging.Level.SEVERE;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -64,12 +65,11 @@ public class Controller {
         }
     }
 
-    //TODO Remove this function
     @RequestMapping(value = SAVE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
     public ResponseEntity<String> saveDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
         try {
             if(auth==null) {
-                return new ResponseEntity<>("You are not authenticated", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>("You are not authenticated", UNAUTHORIZED);
             }
             String jsonParamBody = request.getParameter("json");
 
@@ -84,7 +84,10 @@ public class Controller {
 
             return new ResponseEntity<>(response.toString(), OK);
         } catch (Exception exception) {
-            return new ResponseEntity<>("You are not authenticated", HttpStatus.NOT_FOUND);
+            LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
         }
     }
 
