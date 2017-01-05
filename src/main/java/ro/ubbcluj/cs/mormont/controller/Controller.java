@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ro.ubbcluj.cs.mormont.Service;
 import ro.ubbcluj.cs.mormont.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,11 +48,13 @@ public class Controller {
     private static final String AUTHORIZATION = "/login";
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+    private final Service mService;
 
     @Autowired
     public Controller(UserRepository userRepository, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
+        mService = new Service();
     }
 
     //TODO Remove this function
@@ -81,6 +84,7 @@ public class Controller {
             String versionDoc = request.getParameter("versionDoc");
             String jsonDocument = request.getParameter("jsonDoc");
 
+            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc));
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -106,6 +110,8 @@ public class Controller {
             // null if not populated
             String jsonDocument = request.getParameter("jsonDoc");
 
+            mService.createNewDocument(username, jsonDocument);
+
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
 
@@ -127,10 +133,7 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            // TODO populate this json with the response
-            JsonObject response = new JsonObject();
-
-            return new ResponseEntity<>(response.toString(), OK);
+            return new ResponseEntity<>(mService.getAllDocumetsForList(username), OK);
         } catch (Exception exception) {
             LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
 
@@ -176,6 +179,7 @@ public class Controller {
             String idDoc = request.getParameter("idDoc");
             String versionDoc = request.getParameter("versionDoc");
 
+            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc));
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
