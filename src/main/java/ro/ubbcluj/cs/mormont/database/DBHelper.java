@@ -32,7 +32,7 @@ public class DBHelper {
     }
     private DBHelper(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        selectFacultate(2);
+        //selectFacultate(2);
     }
 
     public static void fillUsers() {
@@ -74,5 +74,93 @@ public class DBHelper {
             System.out.print(row.get("id_facultate"));
         }
 //        System.out.print(res);
+    }
+
+    public List<Map<String, Object>> getAllDocumentsForUser(String username){
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where username = ?";
+        return jdbcTemplate.queryForList(sql, username);
+
+    }
+
+    public int generateID(){
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+        int maxId = 0;
+        for (Map row:rows){
+            if((int)row.get("id_dispozitie") > maxId){
+                maxId = (int)row.get("id_dispozitie");
+            }
+        }
+
+        return maxId + 1;
+
+    }
+
+    public int getUserTypeId(String username) {
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_tip_solicitant";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+
+        for (Map row:rows){
+            if( row.get("username").toString().equals(username) ){
+                return (int)row.get("funcite");
+            }
+        }
+
+        return -1;
+    }
+
+    public void saveNewDocument(int id, float versiune, String username, int tipUser, String date, String document) {
+        String sql = "INSERT INTO mormont.Dispozitia_Rectorului_Simple" +
+                " (id_dispozitie, versiune, username, tip_initiator, data, documentJson) VALUES (?,?,?,?,?)";
+
+        jdbcTemplate.update(sql, new Object[]{id, versiune, username, tipUser, date, document});
+
+    }
+
+    public void saveNewDocumentVersion(int idDocument, float versiuneNoua, String username, int idTipSolicitant, String document, String date) {
+        String sql = "INSERT INTO mormont.Dispozitia_Rectorului_Simple" +
+                " (id_dispozitie, versiune, username, tip_initiator, data, documentJson) VALUES (?,?,?,?,?)";
+
+        jdbcTemplate.update(sql, new Object[]{idDocument, versiuneNoua, username, idTipSolicitant, date, document});
+    }
+
+    public String getDocumentDate(int id) {
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where id = ?";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, id);
+        return rows.get(0).get("data").toString();
+    }
+
+    public String getDocumentJson(int id, float versiune) {
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where id = ? and versiune = ?";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[]{id, versiune});
+        return rows.get(0).get("documentJson").toString();
+    }
+
+    public List<Map<String, Object>> getFlowForUserType(int userTypeId) {
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Flux WHERE id_tip_solicitant = ?";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, userTypeId);
+        return rows;
+
+    }
+
+    public void makeDocumentFinal(int id, float newVersion, int userTypeId, int aprobare, String username, String documentDate, String documentJson) {
+        String sql = "INSERT INTO mormont.Dispozitia_Rectorului_Simple" +
+                "VALUES (?,?,?,?,?,?,?)";
+
+        jdbcTemplate.update(sql, new Object[]{id, newVersion, userTypeId, aprobare,username, documentDate, documentJson });
+
+    }
+
+    public Map<String, Object> getDocument(int id, float versiune){
+        String sql = "SELECT * FROM Dispozitia_Rectorului_Simple WHERE id_dispozitie = ? and versiune = ?";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[]{id, versiune});
+        return rows.get(0);
+    }
+
+    public void updateDocumentStatus(int id, float versiune, int nextApproval) {
+        String sql = "UPDATE mormont.Dispozitia_Rectorului_Simple SET id_aprobare = " +nextApproval + "WHERE id_dispozitie = ? and versiune = ?";
+
+        jdbcTemplate.update(sql, new Object[]{id, versiune});
+
     }
 }
