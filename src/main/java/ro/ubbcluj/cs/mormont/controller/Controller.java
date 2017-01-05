@@ -19,15 +19,13 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.logging.Level.SEVERE;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static ro.ubbcluj.cs.mormont.entity.Headers.PASSWORD;
 import static ro.ubbcluj.cs.mormont.entity.Headers.USERNAME;
 import static ro.ubbcluj.cs.mormont.utils.InputsUtil.getRequiredHeader;
-import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.getAuthDetails;
-import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.getExceptionDetails;
+import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.*;
 
 
 /*
@@ -39,6 +37,13 @@ import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.getExceptionDetails;
 public class Controller {
     private static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     private static final String TEST_LOGIN = "/check_login";
+    private static final String SAVE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/save";
+    private static final String CREATE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/create";
+    private static final String GET_ALL_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/getAllDocuments";
+    private static final String DELETE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/delete";
+    private static final String APPROVE_DOC = "/approveDoc";
+    private static final String REJECT_DOC = "/rejectDoc";
+    private static final String REVISE_DOC = "/reviseDoc";
     private static final String AUTHORIZATION = "/login";
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -53,12 +58,184 @@ public class Controller {
     @RequestMapping(value = TEST_LOGIN, method = GET)
     public ResponseEntity<String> testLogin(Authentication auth) {
         try {
-            if(auth==null) {
+            if (auth == null) {
                 throw new Exception("Not authenticated");
             }
-            return new ResponseEntity<>(String.format("Welcome %s", ((User)auth.getPrincipal()).getUsername()), HttpStatus.OK);
+            return new ResponseEntity<>(String.format("Welcome %s", ((User) auth.getPrincipal()).getUsername()), HttpStatus.OK);
         } catch (Exception exception) {
             return new ResponseEntity<>("You are not authenticated", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(value = SAVE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
+    public ResponseEntity<String> saveDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+            String jsonDocument = request.getParameter("jsonDoc");
+
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = CREATE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
+    public ResponseEntity<String> createDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            // null if not populated
+            String jsonDocument = request.getParameter("jsonDoc");
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = GET_ALL_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllDispozitiaRectorului(Authentication auth) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = DELETE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
+    public ResponseEntity<String> deleteDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = APPROVE_DOC, produces = "application/json", method = POST)
+    public ResponseEntity<String> approveDocument(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = REVISE_DOC, produces = "application/json", method = POST)
+    public ResponseEntity<String> reviseDocument(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = REJECT_DOC, produces = "application/json", method = POST)
+    public ResponseEntity<String> rejectDocument(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
         }
     }
 

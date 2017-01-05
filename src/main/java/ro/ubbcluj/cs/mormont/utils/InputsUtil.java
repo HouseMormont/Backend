@@ -1,5 +1,7 @@
 package ro.ubbcluj.cs.mormont.utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ro.ubbcluj.cs.mormont.entity.Headers;
@@ -22,6 +24,18 @@ public class InputsUtil {
             throw new IllegalArgumentException(format("Required header %s is not specified.", header.getValue()));
         }
         return headerValue;
+    }
+
+    @NotNull
+    @Contract("_,_->!null")
+    public static String getRequiredJsonElementFromBody(String jsonParamBody, String s) throws IllegalArgumentException {
+        JsonParser parser = new JsonParser();
+        JsonObject o = parser.parse(jsonParamBody).getAsJsonObject();
+        String result = o.get(s).toString();
+        if (result == null) {
+            throw new IllegalArgumentException(format("Required parameter %s not found for this method.", s));
+        }
+        return result;
     }
 
     @NotNull
