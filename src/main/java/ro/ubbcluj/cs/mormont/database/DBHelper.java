@@ -158,7 +158,7 @@ public class DBHelper {
     }
 
     public void updateDocumentStatus(int id, float versiune, int nextApproval) {
-        String sql = "UPDATE mormont.Dispozitia_Rectorului_Simple SET id_aprobare = " +nextApproval + "WHERE id_dispozitie = ? and versiune = ?";
+        String sql = "UPDATE mormont.Dispozitia_Rectorului_Simple SET id_aprobare = " +nextApproval + " WHERE id_dispozitie = ? and versiune = ?";
 
         jdbcTemplate.update(sql, new Object[]{id, versiune});
 
