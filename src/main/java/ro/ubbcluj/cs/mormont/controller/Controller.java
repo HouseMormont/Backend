@@ -57,16 +57,15 @@ public class Controller {
         mService = new Service();
     }
 
-    //TODO Remove this function
     @RequestMapping(value = TEST_LOGIN, method = GET)
     public ResponseEntity<String> testLogin(Authentication auth) {
         try {
-            if (auth == null) {
+            if(auth==null) {
                 throw new Exception("Not authenticated");
             }
-            return new ResponseEntity<>(String.format("Welcome %s", ((User) auth.getPrincipal()).getUsername()), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception exception) {
-            return new ResponseEntity<>("You are not authenticated", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
