@@ -97,12 +97,12 @@ public class DBHelper {
     }
 
     public int getUserTypeId(String username) {
-        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_tip_solicitant";
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+        String sql = "SELECT * FROM mormont.Users where username = ?";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, username);
 
         for (Map row:rows){
             if( row.get("username").toString().equals(username) ){
-                return (int)row.get("funcite");
+                return (int)row.get("functie");
             }
         }
 
@@ -111,7 +111,7 @@ public class DBHelper {
 
     public void saveNewDocument(int id, float versiune, String username, int tipUser, String date, String document) {
         String sql = "INSERT INTO mormont.Dispozitia_Rectorului_Simple" +
-                " (id_dispozitie, versiune, username, tip_initiator, data, documentJson) VALUES (?,?,?,?,?)";
+                " (id_dispozitie, versiune, username, tip_initiator, data, documentJson) VALUES (?,?,?,?,?,?)";
 
         jdbcTemplate.update(sql, new Object[]{id, versiune, username, tipUser, date, document});
 
@@ -119,13 +119,13 @@ public class DBHelper {
 
     public void saveNewDocumentVersion(int idDocument, float versiuneNoua, String username, int idTipSolicitant, String document, String date) {
         String sql = "INSERT INTO mormont.Dispozitia_Rectorului_Simple" +
-                " (id_dispozitie, versiune, username, tip_initiator, data, documentJson) VALUES (?,?,?,?,?)";
+                " (id_dispozitie, versiune, username, tip_initiator, data, documentJson) VALUES (?,?,?,?,?,?)";
 
         jdbcTemplate.update(sql, new Object[]{idDocument, versiuneNoua, username, idTipSolicitant, date, document});
     }
 
     public String getDocumentDate(int id) {
-        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where id = ?";
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where id_dispozitie = ?";
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, id);
         return rows.get(0).get("data").toString();
     }

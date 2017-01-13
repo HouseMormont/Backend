@@ -1,6 +1,9 @@
 package ro.ubbcluj.cs.mormont.controller;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +12,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ro.ubbcluj.cs.mormont.Service;
 import ro.ubbcluj.cs.mormont.repository.UserRepository;
@@ -98,7 +103,7 @@ public class Controller {
     }
 
     @RequestMapping(value = CREATE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
-    public ResponseEntity<String> createDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> createDispozitiaRectorului(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
@@ -106,10 +111,10 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            // null if not populated
-            String jsonDocument = request.getParameter("jsonDoc");
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
 
-            mService.createNewDocument(username, jsonDocument);
+            mService.createNewDocument(username, json.get("jsonDoc").toString());
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
