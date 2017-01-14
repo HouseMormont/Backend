@@ -1,6 +1,7 @@
 package ro.ubbcluj.cs.mormont;
 
 import com.google.gson.Gson;
+import com.sun.xml.internal.bind.v2.TODO;
 import ro.ubbcluj.cs.mormont.controller.Controller;
 import ro.ubbcluj.cs.mormont.database.DBHelper;
 import ro.ubbcluj.cs.mormont.entity.DocumentListItem;
@@ -154,17 +155,18 @@ public class Service {
                 );
                 items.add(item);
             }
-            documents = DBHelper.getInstance().getAllDRForUser(username);
-            for (Map row : documents) {
-                DocumentListItem item = new DocumentListItem(
-                        (int) row.get("id_dispozitie"),
-                        (float) row.get("versiune"),
-                        (String) row.get("data"),
-                        "Referat necesitate",
-                        getApprovalName((Integer) row.get("id_aprobare"))
-                );
-                items.add(item);
-            }
+            //TODO: uncomment this when support for RN is added
+//            documents = DBHelper.getInstance().getAllDRForUser(username);
+//            for (Map row : documents) {
+//                DocumentListItem item = new DocumentListItem(
+//                        (int) row.get("id_dispozitie"),
+//                        (float) row.get("versiune"),
+//                        (String) row.get("data"),
+//                        "Referat necesitate",
+//                        getApprovalName((Integer) row.get("id_aprobare"))
+//                );
+//                items.add(item);
+//            }
         }
 
         Gson gson = new Gson();
