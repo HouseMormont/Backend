@@ -104,11 +104,11 @@ public class Service {
     }
 
 
-    public String getDocumentById(String username, float idDocument) {
+    public String getDocumentById(String username, float versiune, int idDocument) {
         List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username);
         Gson gson = new Gson();
         for (Map row : documents) {
-            if (row.get("id_dispozitie").toString().equals(idDocument))
+            if ((Float)row.get("id_dispozitie") == idDocument && (int)row.get("versiune") == versiune)
                 return gson.toJson(row);
         }
 

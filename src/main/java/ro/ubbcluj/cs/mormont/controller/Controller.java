@@ -47,6 +47,7 @@ public class Controller {
     private static final String CREATE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/create";
     private static final String GET_ALL_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/getAllDocuments";
     private static final String DELETE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/delete";
+    private static final String GET_DOCUMENT_BY_ID = "/getDocumentById";
     private static final String GET_ALL_DOCUMENTS = "/getAllDocuments";
     private static final String APPROVE_DOC = "/approveDoc";
     private static final String REJECT_DOC = "/rejectDoc";
@@ -100,6 +101,33 @@ public class Controller {
             JsonObject response = new JsonObject();
 
             return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = GET_DOCUMENT_BY_ID, produces = "application/json", method = POST)
+    public ResponseEntity<String> getDocumentById(@RequestBody String body, Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = json.getAsString("id");
+            String versionDoc = json.getAsString("versiune");
+
+            return new ResponseEntity<>(mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc)), OK);
+
+            // TODO populate this json with the response
+
         } catch (Exception exception) {
             LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
 
