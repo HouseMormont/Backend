@@ -47,6 +47,7 @@ public class Controller {
     private static final String CREATE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/create";
     private static final String GET_ALL_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/getAllDocuments";
     private static final String DELETE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/delete";
+    private static final String GET_ALL_DOCUMENTS = "/getAllDocuments";
     private static final String APPROVE_DOC = "/approveDoc";
     private static final String REJECT_DOC = "/rejectDoc";
     private static final String REVISE_DOC = "/reviseDoc";
@@ -54,6 +55,11 @@ public class Controller {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final Service mService;
+
+    public enum DOCUMENTS_TYPE{
+        DISPOZITIA_RECTORULUI,
+        REFERAT_NECESITATE,
+    }
 
     @Autowired
     public Controller(UserRepository userRepository, AuthenticationManager authenticationManager) {
@@ -137,7 +143,24 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            return new ResponseEntity<>(mService.getAllDocumetsForList(username), OK);
+            return new ResponseEntity<>(mService.getAllDocumetsForList(username, DOCUMENTS_TYPE.DISPOZITIA_RECTORULUI), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed get all documents:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = GET_ALL_DOCUMENTS, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllDocumentsForUser(Authentication auth){
+        try{
+            if(auth == null){
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+            return new ResponseEntity<>(mService.getAllDocumetsForList(username, null), OK);
         } catch (Exception exception) {
             LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
 

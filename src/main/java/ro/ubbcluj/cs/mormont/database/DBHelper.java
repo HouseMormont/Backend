@@ -3,6 +3,7 @@ package ro.ubbcluj.cs.mormont.database;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ro.ubbcluj.cs.mormont.Domain.User;
 import ro.ubbcluj.cs.mormont.database.tableHelpers.FacultatiHelper;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 import java.util.Map;
@@ -157,10 +158,27 @@ public class DBHelper {
         return rows.get(0);
     }
 
+    public List<Map<String, Object>> getAllApprovals(){
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_tip_avizare";
+        return jdbcTemplate.queryForList(sql);
+    }
+
     public void updateDocumentStatus(int id, float versiune, int nextApproval) {
         String sql = "UPDATE mormont.Dispozitia_Rectorului_Simple SET id_aprobare = " +nextApproval + " WHERE id_dispozitie = ? and versiune = ?";
 
         jdbcTemplate.update(sql, new Object[]{id, versiune});
 
+    }
+
+    public List<Map<String,Object>> getAllDRForUser(String username) {
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where username = ?";
+        return jdbcTemplate.queryForList(sql, username);
+    }
+
+    public List<Map<String,Object>> getAllRNForUser(String username) {
+        throw new NotImplementedException();
+//
+//        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where username = ?";
+//        return jdbcTemplate.queryForList(sql, username);
     }
 }

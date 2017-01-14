@@ -1,6 +1,7 @@
 package ro.ubbcluj.cs.mormont;
 
 import com.google.gson.Gson;
+import ro.ubbcluj.cs.mormont.controller.Controller;
 import ro.ubbcluj.cs.mormont.database.DBHelper;
 import ro.ubbcluj.cs.mormont.entity.DocumentListItem;
 
@@ -113,16 +114,75 @@ public class Service {
         return null;
     }
 
-    public String getAllDocumetsForList(String username) {
-        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username);
-        Gson gson = new Gson();
+    public String getAllDocumetsForList(String username, Controller.DOCUMENTS_TYPE docType) {
+        List<Map<String, Object>> documents = null;
         ArrayList<DocumentListItem> items = new ArrayList<>();
-        for (Map row : documents) {
-            DocumentListItem item = new DocumentListItem((int)row.get("id_dispozitie"), (float)row.get("versiune"), (String )row.get("data"));
-            items.add(item);
+
+        if(docType == Controller.DOCUMENTS_TYPE.DISPOZITIA_RECTORULUI) {
+            documents = DBHelper.getInstance().getAllDRForUser(username);
+            for (Map row : documents) {
+                DocumentListItem item = new DocumentListItem(
+                        (int) row.get("id_dispozitie"),
+                        (float) row.get("versiune"),
+                        (String) row.get("data"),
+                        "Dispozitia rectorului",
+                        getApprovalName((Integer) row.get("id_aprobare"))
+                );
+                items.add(item);
+            }
+        } else if(docType == Controller.DOCUMENTS_TYPE.REFERAT_NECESITATE){
+            documents = DBHelper.getInstance().getAllRNForUser(username);
+            for (Map row : documents) {
+                DocumentListItem item = new DocumentListItem(
+                        (int) row.get("id_dispozitie"),
+                        (float) row.get("versiune"),
+                        (String) row.get("data"),
+                        "Referat necesitate",
+                        getApprovalName((Integer) row.get("id_aprobare"))
+                );
+                items.add(item);
+            }
+        } else if(docType == null){
+            documents = DBHelper.getInstance().getAllDRForUser(username);
+            for (Map row : documents) {
+                DocumentListItem item = new DocumentListItem(
+                        (int) row.get("id_dispozitie"),
+                        (float) row.get("versiune"),
+                        (String) row.get("data"),
+                        "Dispozitia rectorului",
+                        getApprovalName((Integer) row.get("id_aprobare"))
+                );
+                items.add(item);
+            }
+            documents = DBHelper.getInstance().getAllDRForUser(username);
+            for (Map row : documents) {
+                DocumentListItem item = new DocumentListItem(
+                        (int) row.get("id_dispozitie"),
+                        (float) row.get("versiune"),
+                        (String) row.get("data"),
+                        "Referat necesitate",
+                        getApprovalName((Integer) row.get("id_aprobare"))
+                );
+                items.add(item);
+            }
         }
 
+        Gson gson = new Gson();
         return gson.toJson(items);
+    }
+
+    private String getApprovalName(Integer id_aprobare) {
+        if(id_aprobare == null || id_aprobare == 0){
+            return "";
+        }
+
+        List<Map<String, Object>> approvals = DBHelper.getInstance().getAllApprovals();
+        for (Map row : approvals){
+            if(row.get("id").equals(id_aprobare)){
+                return (String)row.get("descriere");
+            }
+        }
+        return "";
     }
 
     private String getDate() {

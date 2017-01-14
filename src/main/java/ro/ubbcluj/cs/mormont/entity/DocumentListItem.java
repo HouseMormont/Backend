@@ -8,10 +8,31 @@ public class DocumentListItem {
     private float versiune;
     private String data;
 
-    public DocumentListItem(int id, float versiune, String data) {
+    public String getTipDocumet() {
+        return tipDocumet;
+    }
+
+    public void setTipDocumet(String tipDocumet) {
+        this.tipDocumet = tipDocumet;
+    }
+
+    public String getAveizare() {
+        return aveizare;
+    }
+
+    public void setAveizare(String aveizare) {
+        this.aveizare = aveizare;
+    }
+
+    private String tipDocumet;
+    private String aveizare;
+
+    public DocumentListItem(int id, float versiune, String data, String tip, String avizare) {
         this.id = id;
         this.versiune = versiune;
         this.data = data;
+        this.tipDocumet = tip;
+        this.aveizare = avizare;
     }
 
     public int getId() {
