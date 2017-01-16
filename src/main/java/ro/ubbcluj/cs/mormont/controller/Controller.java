@@ -1,6 +1,5 @@
 package ro.ubbcluj.cs.mormont.controller;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -14,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ro.ubbcluj.cs.mormont.Service;
 import ro.ubbcluj.cs.mormont.repository.UserRepository;
@@ -44,9 +42,13 @@ public class Controller {
     private static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     private static final String TEST_LOGIN = "/check_login";
     private static final String SAVE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/save";
+    private static final String SAVE_REFERAT_NECESITATE = "/referatNecesitate/save";
     private static final String CREATE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/create";
+    private static final String CREATE_REFERAT_NECESITATE = "/referatNecesitate/create";
     private static final String GET_ALL_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/getAllDocuments";
+    private static final String GET_ALL_REFERAT_NECESITATE = "/referatNecesitate/getAllDocuments";
     private static final String DELETE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/delete";
+    private static final String DELETE_REFERAT_NECESITATE = "/referatNecesitate/delete";
     private static final String GET_DOCUMENT_BY_ID = "/getDocumentById";
     private static final String GET_ALL_DOCUMENTS = "/getAllDocuments";
     private static final String APPROVE_DOC = "/approveDoc";
@@ -95,7 +97,7 @@ public class Controller {
             String versionDoc = request.getParameter("versionDoc");
             String jsonDocument = request.getParameter("jsonDoc");
 
-            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc));
+            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc),"DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -103,6 +105,33 @@ public class Controller {
             return new ResponseEntity<>(response.toString(), OK);
         } catch (Exception exception) {
             LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+    @RequestMapping(value = SAVE_REFERAT_NECESITATE, produces = "application/json", method = POST)
+    public ResponseEntity<String> saveReferatNecesitate(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+            String jsonDocument = request.getParameter("jsonDoc");
+
+            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc),"RN");
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to save the necesity report:", exception);
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
@@ -148,7 +177,7 @@ public class Controller {
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(body);
 
-            mService.createNewDocument(username, json.get("jsonDoc").toString());
+            mService.createNewDocument(username, json.get("jsonDoc").toString() , "DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -162,8 +191,51 @@ public class Controller {
         }
     }
 
+    @RequestMapping(value = CREATE_REFERAT_NECESITATE, produces = "application/json", method = POST)
+    public ResponseEntity<String> createReferatNeceistate(@RequestBody String body, Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            mService.createNewDocument(username, json.get("jsonDoc").toString() , "RN");
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to create the necesity report:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = GET_ALL_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
     public ResponseEntity<String> getAllDispozitiaRectorului(Authentication auth) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            return new ResponseEntity<>(mService.getAllDocumetsForList(username, DOCUMENTS_TYPE.DISPOZITIA_RECTORULUI), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed get all documents:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+    @RequestMapping(value = GET_ALL_REFERAT_NECESITATE, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllReferatNecesitate(Authentication auth) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
@@ -190,7 +262,7 @@ public class Controller {
             String username = ((User) auth.getPrincipal()).getUsername();
             return new ResponseEntity<>(mService.getAllDocumetsForList(username, null), OK);
         } catch (Exception exception) {
-            LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
+            LOGGER.log(SEVERE, "Failed to get all documents the rector disposition:", exception);
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
@@ -215,13 +287,37 @@ public class Controller {
 
             return new ResponseEntity<>(response.toString(), OK);
         } catch (Exception exception) {
-            LOGGER.log(SEVERE, "Failed to create the rector disposition:", exception);
+            LOGGER.log(SEVERE, "Failed to delete the rector disposition:", exception);
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
         }
     }
 
+    @RequestMapping(value = DELETE_REFERAT_NECESITATE, produces = "application/json", method = POST)
+    public ResponseEntity<String> deleteReferatNecesitate(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to delete the necesity report :", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
     @RequestMapping(value = APPROVE_DOC, produces = "application/json", method = POST)
     public ResponseEntity<String> approveDocument(Authentication auth, HttpServletRequest request) {
         try {
@@ -234,7 +330,7 @@ public class Controller {
             String idDoc = request.getParameter("idDoc");
             String versionDoc = request.getParameter("versionDoc");
 
-            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc));
+            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc),"DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
