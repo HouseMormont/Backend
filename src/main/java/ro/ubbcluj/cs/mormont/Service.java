@@ -1,7 +1,6 @@
 package ro.ubbcluj.cs.mormont;
 
 import com.google.gson.Gson;
-import com.sun.xml.internal.bind.v2.TODO;
 import ro.ubbcluj.cs.mormont.controller.Controller;
 import ro.ubbcluj.cs.mormont.database.DBHelper;
 import ro.ubbcluj.cs.mormont.entity.DocumentListItem;
@@ -17,26 +16,24 @@ import java.util.Map;
  */
 public class Service {
 
-    public void createNewDocument(String username, String document) {
+    public void createNewDocument(String username, String document , String documentType) {
 
         int id = DBHelper.getInstance().generateID();
         int idTipSolicitant = DBHelper.getInstance().getUserTypeId(username);
         float versiune = (float) 0.1;
         String date = getDate();
-
-        DBHelper.getInstance().saveNewDocument(id, versiune, username,  idTipSolicitant, date, document);
-
+        DBHelper.getInstance().saveNewDocument(id, versiune, username, idTipSolicitant, date, document , documentType);
     }
 
-    public void updateDocument(String username, String document, float versiuneDocument, final int idDocument){
+    public void updateDocument(String username, String document, float versiuneDocument, final int idDocument , String documentType){
         int idTipSolicitant = DBHelper.getInstance().getUserTypeId(username);
         float versiuneNoua = versiuneDocument + (float)0.1;
 
-        DBHelper.getInstance().saveNewDocumentVersion(idDocument, versiuneNoua, username, idTipSolicitant, document, getDocumentDate(idDocument));
+        DBHelper.getInstance().saveNewDocumentVersion(idDocument, versiuneNoua, username, idTipSolicitant, document, getDocumentDate(idDocument , documentType), documentType);
     }
 
 
-    public void startDocumentFlow(int id, float versiune, String username){
+    public void startDocumentFlow(int id, float versiune, String username , String documentType){
         float newVersion = 1.0f;
         int aprobare = getFirstApprovalNeededForDocument(DBHelper.getInstance().getUserTypeId(username));
 
@@ -47,13 +44,14 @@ public class Service {
                 DBHelper.getInstance().getUserTypeId(username),
                 aprobare,
                 username,
-                getDocumentDate(id),
-                getDocumentJson(id, versiune)
+                getDocumentDate(id,documentType),
+                getDocumentJson(id, versiune ,documentType),
+                documentType
                 );
     }
 
-    public void approveDocument(String username, int id, float versiune) throws Exception {
-        Map<String, Object> document = DBHelper.getInstance().getDocument(id, versiune);
+    public void approveDocument(String username, int id, float versiune, String documentType) throws Exception {
+        Map<String, Object> document = DBHelper.getInstance().getDocument(id, versiune,documentType);
         int initiator = (int)document.get("id_initiator");
         int aprobare = (int)document.get("id_aprobare");
 
@@ -64,7 +62,7 @@ public class Service {
             if(nextApproval == -1){
                 throw new Exception("Something went wrong! Next Approval not found in the database");
             }
-            DBHelper.getInstance().updateDocumentStatus(id, versiune, nextApproval);
+            DBHelper.getInstance().updateDocumentStatus(id, versiune, nextApproval,documentType);
 
         }
 
@@ -156,17 +154,17 @@ public class Service {
                 items.add(item);
             }
             //TODO: uncomment this when support for RN is added
-//            documents = DBHelper.getInstance().getAllDRForUser(username);
-//            for (Map row : documents) {
-//                DocumentListItem item = new DocumentListItem(
-//                        (int) row.get("id_dispozitie"),
-//                        (float) row.get("versiune"),
-//                        (String) row.get("data"),
-//                        "Referat necesitate",
-//                        getApprovalName((Integer) row.get("id_aprobare"))
-//                );
-//                items.add(item);
-//            }
+            documents = DBHelper.getInstance().getAllDRForUser(username);
+            for (Map row : documents) {
+                DocumentListItem item = new DocumentListItem(
+                        (int) row.get("id_dispozitie"),
+                        (float) row.get("versiune"),
+                        (String) row.get("data"),
+                        "Referat necesitate",
+                        getApprovalName((Integer) row.get("id_aprobare"))
+                );
+                items.add(item);
+            }
         }
 
         Gson gson = new Gson();
@@ -193,12 +191,12 @@ public class Service {
         return dtf.format(localDate);
     }
 
-    private String getDocumentDate(int id){
-        return DBHelper.getInstance().getDocumentDate(id);
+    private String getDocumentDate(int id , String documentType){
+        return DBHelper.getInstance().getDocumentDate(id , documentType);
     }
 
-    private String getDocumentJson(int id, float versiune){
-        return DBHelper.getInstance().getDocumentJson(id, versiune);
+    private String getDocumentJson(int id, float versiune ,String documentType){
+        return DBHelper.getInstance().getDocumentJson(id, versiune , documentType);
     }
 
 }
