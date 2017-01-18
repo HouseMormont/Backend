@@ -438,7 +438,7 @@ public class Controller {
     }
 
     @RequestMapping(value = FINALIZARE, produces = "application/json", method = POST)
-    public ResponseEntity<String> startDocumentFlow(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> startDocumentFlow(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
@@ -446,11 +446,13 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("verDoc");
-            String docType = request.getParameter("docType");
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
 
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("verDoc");
+            String docType = json.getAsString("docType");
             mService.startDocumentFlow(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), username, docType);
 
             // TODO populate this json with the response
