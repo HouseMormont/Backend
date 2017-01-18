@@ -55,6 +55,7 @@ public class Controller {
     private static final String REJECT_DOC = "/rejectDoc";
     private static final String REVISE_DOC = "/reviseDoc";
     private static final String AUTHORIZATION = "/login";
+    private static final String FINALIZARE = "/finalizare";
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final Service mService;
@@ -426,6 +427,34 @@ public class Controller {
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping(value = FINALIZARE, produces = "application/json", method = POST)
+    public ResponseEntity<String> startDocumentFlow(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("verDoc");
+            String docType = request.getParameter("docType");
+
+            mService.startDocumentFlow(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), username, docType);
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
         }
     }
 }
