@@ -155,7 +155,7 @@ public class DBHelper {
 
 
     public String getDocumentJson(int id, float versiune, String documentType) {
-        String sql = "SELECT * FROM "+ checkDocumentType(documentType) +" where id = ? and versiune = ?";
+        String sql = "SELECT * FROM "+ checkDocumentType(documentType) +" where id_dispozitie = ? and ROUND(versiune, 1) = ROUND(?, 1)";
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[]{id, versiune});
         return rows.get(0).get("documentJson").toString();
     }
@@ -171,7 +171,7 @@ public class DBHelper {
 
     public void makeDocumentFinal(int id, float newVersion, int userTypeId, int aprobare, String username, String documentDate, String documentJson ,String documentType) {
         String sql = "INSERT INTO "  + checkDocumentType(documentType) +
-                "VALUES (?,?,?,?,?,?,?)";
+                " (id_dispozitie, versiune, tip_initiator, id_aprobare, username, data, documentJson) VALUES (?,?,?,?,?,?,?)";
 
         jdbcTemplate.update(sql, new Object[]{id, newVersion, userTypeId, aprobare,username, documentDate, documentJson });
 
@@ -213,5 +213,18 @@ public class DBHelper {
         String sql = "SELECT * FROM mormont.referat_necesitate_simple where username = ?";
         return jdbcTemplate.queryForList(sql, username);
 
+    }
+
+    public int getOwner(int id, float ver, String docType){
+        String sql = "SELECT * FROM " + checkDocumentType(docType) +  " where id_dispozitie = ? and ROUND(versiune, 1) = ROUND(?, 1)";
+        List<Map<String,Object>> row = jdbcTemplate.queryForList(sql, new Object[]{id, ver});
+        return (int)row.get(0).get("tip_initiator");
+
+    }
+
+    public String getOwnerUsername(int id, float versiune, String docType) {
+        String sql = "SELECT * FROM " + checkDocumentType(docType) +  " where id_dispozitie = ? and ROUND(versiune, 1) = ROUND(?, 1)";
+        List<Map<String,Object>> row = jdbcTemplate.queryForList(sql, new Object[]{id, versiune});
+        return (String )row.get(0).get("username");
     }
 }
