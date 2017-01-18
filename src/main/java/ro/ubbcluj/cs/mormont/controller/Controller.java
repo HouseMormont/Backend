@@ -271,17 +271,21 @@ public class Controller {
     }
 
     @RequestMapping(value = DELETE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
-    public ResponseEntity<String> deleteDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> deleteDispozitiaRectorului(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
-            String username = ((User) auth.getPrincipal()).getUsername();
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
 
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = json.getAsString("id");
+            String versionDoc = json.getAsString("versiune");
+            String docType = json.getAsString("docType");
 
+            mService.removeDocument(idDoc, docType);
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -296,18 +300,21 @@ public class Controller {
     }
 
     @RequestMapping(value = DELETE_REFERAT_NECESITATE, produces = "application/json", method = POST)
-    public ResponseEntity<String> deleteReferatNecesitate(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> deleteReferatNecesitate(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
-            String username = ((User) auth.getPrincipal()).getUsername();
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
 
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = json.getAsString("id");
+            String versionDoc = json.getAsString("versiune");
+            String docType = json.getAsString("docType");
 
-
+            mService.removeDocument(idDoc, docType);
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
 

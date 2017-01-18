@@ -200,4 +200,7 @@ public class Service {
         return DBHelper.getInstance().getDocumentJson(id, versiune , documentType);
     }
 
+    public void removeDocument(String idDoc, String docType) {
+        DBHelper.getInstance().deleteDocument(idDoc, docType);
+    }
 }
