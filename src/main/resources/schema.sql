@@ -474,5 +474,21 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Simple` (
 
 );
 
+CREATE TABLE IF NOT EXISTS `Referat_Necesitate_Simple` (
+
+  id_dispozitie INT,
+  versiune      FLOAT,
+  username      VARCHAR(50),
+  tip_initiator INT,  #ce tip de user a initiat cererea. Se foloseste pentru a afla flow-ul
+  id_aprobare   INT, /* Id-ul aprobarii in asteptare*/
+  data          VARCHAR(12),
+  documentJson  MEDIUMTEXT, /*16,777,215 characters */
+
+  PRIMARY KEY (id_dispozitie, versiune),
+  FOREIGN KEY (`id_aprobare`) REFERENCES Dispozitia_Rectorului_tip_avizare (`id`),
+  FOREIGN KEY (`tip_initiator`) REFERENCES Dispozitia_Rectorului_tip_solicitant (`id`)
+
+);
+
 
 
