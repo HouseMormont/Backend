@@ -214,4 +214,9 @@ public class DBHelper {
         return jdbcTemplate.queryForList(sql, username);
 
     }
+
+    public void deleteDocument(String idDoc, String docType) {
+        String sql = "SELECT * FROM " + checkDocumentType(docType)+ " where id_dispozitie = ?";
+        jdbcTemplate.update(sql,idDoc);
+    }
 }
