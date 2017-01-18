@@ -154,7 +154,7 @@ public class Service {
                 items.add(item);
             }
             //TODO: uncomment this when support for RN is added
-            documents = DBHelper.getInstance().getAllDRForUser(username);
+            documents = DBHelper.getInstance().getAllRNForUser(username);
             for (Map row : documents) {
                 DocumentListItem item = new DocumentListItem(
                         (int) row.get("id_dispozitie"),
