@@ -34,7 +34,7 @@ public class Service {
 
 
     public void startDocumentFlow(int id, float versiune, String username , String documentType){
-        float newVersion = 1.0f;
+        float newVersion = (float)1.0;
         int aprobare = getFirstApprovalNeededForDocument(DBHelper.getInstance().getUserTypeId(username));
 
 
@@ -155,7 +155,7 @@ public class Service {
                 items.add(item);
             }
             //TODO: uncomment this when support for RN is added
-            documents = DBHelper.getInstance().getAllDRForUser(username);
+            documents = DBHelper.getInstance().getAllRNForUser(username);
             for (Map row : documents) {
                 DocumentListItem item = new DocumentListItem(
                         (int) row.get("id_dispozitie"),
