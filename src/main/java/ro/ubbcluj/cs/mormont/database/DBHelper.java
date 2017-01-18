@@ -216,7 +216,7 @@ public class DBHelper {
     }
 
     public int getOwner(int id, float ver, String docType){
-        String sql = "SELECT * FROM " + checkDocumentType(docType) +  "where id_dispozitie = ? and versiune = ?";
+        String sql = "SELECT * FROM " + checkDocumentType(docType) +  " where id_dispozitie = ? and versiune = ?";
         List<Map<String,Object>> row = jdbcTemplate.queryForList(sql, new Object[]{id, ver});
         return (int)row.get(0).get("tip_initiator");
 
