@@ -38,12 +38,13 @@ public class Service {
         int aprobare = getFirstApprovalNeededForDocument(DBHelper.getInstance().getUserTypeId(username));
 
 
+
         DBHelper.getInstance().makeDocumentFinal(
                 id,
                 newVersion,
-                DBHelper.getInstance().getUserTypeId(username),
+                DBHelper.getInstance().getOwner(id, versiune, documentType),
                 aprobare,
-                username,
+                DBHelper.getInstance().getOwnerUsername(id, versiune, documentType),
                 getDocumentDate(id,documentType),
                 getDocumentJson(id, versiune ,documentType),
                 documentType

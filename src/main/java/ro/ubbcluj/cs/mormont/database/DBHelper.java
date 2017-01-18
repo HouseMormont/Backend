@@ -214,4 +214,17 @@ public class DBHelper {
         return jdbcTemplate.queryForList(sql, username);
 
     }
+
+    public int getOwner(int id, float ver, String docType){
+        String sql = "SELECT * FROM " + checkDocumentType(docType) +  "where id_dispozitie = ? and versiune = ?";
+        List<Map<String,Object>> row = jdbcTemplate.queryForList(sql, new Object[]{id, ver});
+        return (int)row.get(0).get("tip_initiator");
+
+    }
+
+    public String getOwnerUsername(int id, float versiune, String docType) {
+        String sql = "SELECT * FROM " + checkDocumentType(docType) +  "where id_dispozitie = ? and versiune = ?";
+        List<Map<String,Object>> row = jdbcTemplate.queryForList(sql, new Object[]{id, versiune});
+        return (String )row.get(0).get("username");
+    }
 }
