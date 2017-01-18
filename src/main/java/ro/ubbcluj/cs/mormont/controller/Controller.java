@@ -56,6 +56,8 @@ public class Controller {
     private static final String REVISE_DOC = "/reviseDoc";
     private static final String AUTHORIZATION = "/login";
     private static final String FINALIZARE = "/finalizare";
+    private static final String DOCS_TO_REVIEW = "/getDocumentsToReview";
+
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final Service mService;
@@ -262,6 +264,23 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
             return new ResponseEntity<>(mService.getAllDocumetsForList(username, null), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to get all documents the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = DOCS_TO_REVIEW, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllDocumentsToReview(Authentication auth){
+        try{
+            if(auth == null){
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+            return new ResponseEntity<>(mService.getAllDocumetsForReviewForList(username), OK);
         } catch (Exception exception) {
             LOGGER.log(SEVERE, "Failed to get all documents the rector disposition:", exception);
 

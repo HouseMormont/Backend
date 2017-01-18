@@ -116,6 +116,19 @@ public class DBHelper {
         return -1;
     }
 
+    public int getUserAuthority(String username) {
+        String sql = "SELECT * FROM mormont.Users where username = ?";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, username);
+
+        for (Map row:rows){
+            if( row.get("username").toString().equals(username) ){
+                return (int)row.get("authority");
+            }
+        }
+
+        return -1;
+    }
+
     private String checkDocumentType(String documentType) {
         switch (documentType){
             case("DR"):
@@ -216,8 +229,9 @@ public class DBHelper {
     }
 
     public void deleteDocument(String idDoc, String docType) {
-        String sql = "SELECT * FROM " + checkDocumentType(docType)+ " where id_dispozitie = ?";
-        jdbcTemplate.update(sql,idDoc);
+        String sql = "SELECT * FROM " + checkDocumentType(docType) + " where id_dispozitie = ?";
+        jdbcTemplate.update(sql, idDoc);
+    }
 
       public int getOwner(int id, float ver, String docType){
         String sql = "SELECT * FROM " + checkDocumentType(docType) +  " where id_dispozitie = ? and ROUND(versiune, 1) = ROUND(?, 1)";
