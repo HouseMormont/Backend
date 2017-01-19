@@ -47,8 +47,7 @@ public class Controller {
     private static final String CREATE_REFERAT_NECESITATE = "/referatNecesitate/create";
     private static final String GET_ALL_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/getAllDocuments";
     private static final String GET_ALL_REFERAT_NECESITATE = "/referatNecesitate/getAllDocuments";
-    private static final String DELETE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/delete";
-    private static final String DELETE_REFERAT_NECESITATE = "/referatNecesitate/delete";
+    private static final String DELETE_DISPOZITIA_RECTORULUI = "/delete";
     private static final String GET_DOCUMENT_BY_ID = "/getDocumentById";
     private static final String GET_ALL_DOCUMENTS = "/getAllDocuments";
     private static final String APPROVE_DOC = "/approveDoc";
@@ -300,7 +299,7 @@ public class Controller {
             JSONObject json = (JSONObject) parser.parse(body);
 
             // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
-            String idDoc = json.getAsString("id");
+            String idDoc = json.getAsString("idDoc");
             String versionDoc = json.getAsString("versiune");
             String docType = json.getAsString("docType");
 
@@ -318,33 +317,7 @@ public class Controller {
         }
     }
 
-    @RequestMapping(value = DELETE_REFERAT_NECESITATE, produces = "application/json", method = POST)
-    public ResponseEntity<String> deleteReferatNecesitate(@RequestBody String body, Authentication auth, HttpServletRequest request) {
-        try {
-            if (auth == null) {
-                return getUnauthorizedResponse();
-            }
 
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(body);
-
-            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
-            String idDoc = json.getAsString("id");
-            String versionDoc = json.getAsString("versiune");
-            String docType = json.getAsString("docType");
-
-            mService.removeDocument(idDoc, docType);
-            // TODO populate this json with the response
-            JsonObject response = new JsonObject();
-
-            return new ResponseEntity<>(response.toString(), OK);
-        } catch (Exception exception) {
-            LOGGER.log(SEVERE, "Failed to delete the necesity report :", exception);
-
-            JsonObject response = getExceptionDetails(exception);
-            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
-        }
-    }
     @RequestMapping(value = APPROVE_DOC, produces = "application/json", method = POST)
     public ResponseEntity<String> approveDocument(Authentication auth, HttpServletRequest request) {
         try {
