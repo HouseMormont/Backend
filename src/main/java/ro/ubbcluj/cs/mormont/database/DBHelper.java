@@ -229,8 +229,8 @@ public class DBHelper {
     }
 
     public void deleteDocument(String idDoc, String docType) {
-        String sql = "SELECT * FROM " + checkDocumentType(docType) + " where id_dispozitie = ?";
-        jdbcTemplate.update(sql, idDoc);
+        String sql = "DELETE FROM " + checkDocumentType(docType) + " where id_dispozitie = ?";
+        jdbcTemplate.update(sql, new Object[]{idDoc});
     }
 
       public int getOwner(int id, float ver, String docType){
