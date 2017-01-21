@@ -25,6 +25,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static ro.ubbcluj.cs.mormont.controller.Controller.DOCUMENTS_TYPE.DISPOZITIA_RECTORULUI;
+
 /**
  * Created by tudorlozba on 04/01/2017.
  */
@@ -120,8 +122,24 @@ public class Service {
         List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username,docType);
         Gson gson = new Gson();
         for (Map row : documents) {
-            if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune)
-                return gson.toJson(row);
+            if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune) {
+                String type;
+                if (docType.equals("DR")) {
+                    type = "Dispozitia rectorului";
+                } else if (docType.equals("RN")) {
+                    type = "Referat necesitate";
+                } else {
+                    throw new RuntimeException("Unrecognized type");
+                }
+                DocumentListItem item = new DocumentListItem(
+                        (int) row.get("id_dispozitie"),
+                        (float) row.get("versiune"),
+                        (String) row.get("data"),
+                        type,
+                        getApprovalName((Integer) row.get("id_aprobare"))
+                );
+                return gson.toJson(item);
+            }
         }
 
         return null;

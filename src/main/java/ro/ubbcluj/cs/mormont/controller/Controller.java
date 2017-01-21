@@ -168,7 +168,9 @@ public class Controller {
             String versionDoc = json.getAsString("verDoc");
             String docType = json.getAsString("docType");
 
-            return new ResponseEntity<>(mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc),docType), OK);
+            String documentById = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), docType);
+
+            return new ResponseEntity<>(documentById, OK);
 
             // TODO populate this json with the response
 
