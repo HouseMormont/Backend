@@ -1,15 +1,29 @@
 package ro.ubbcluj.cs.mormont;
 
 import com.google.gson.Gson;
+import org.apache.pdfbox.examples.signature.CreateSignature;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import ro.ubbcluj.cs.mormont.controller.Controller;
 import ro.ubbcluj.cs.mormont.database.DBHelper;
 import ro.ubbcluj.cs.mormont.entity.DocumentListItem;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by tudorlozba on 04/01/2017.
@@ -237,5 +251,61 @@ public class Service {
 
         Gson gson = new Gson();
         return gson.toJson(items);
+    }
+
+    public byte[] getDocumentAsPdf(String doc, String keyStoreLocation, String keyStorePassword, String keyStoreType) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        String tempName = String.valueOf(UUID.randomUUID())+".pdf";
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+
+        PDFont font = PDType1Font.HELVETICA_BOLD;
+
+        PDPageContentStream contents = new PDPageContentStream(document, page);
+        contents.beginText();
+        contents.setFont(font, 12);
+        contents.newLineAtOffset(100, 700);
+        contents.showText(doc);
+        contents.endText();
+        contents.close();
+        document.addPage(page);
+
+        document.save(tempName);
+        document.close();
+
+        File tempFile = new File(tempName);
+
+        document = PDDocument.load(tempFile);
+
+        PDSignature pdSignature = getPdSignature();
+
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        char[] password = keyStorePassword.toCharArray();
+        keyStore.load(new FileInputStream(keyStoreLocation), password);
+
+        CreateSignature pdfSigner = new CreateSignature(keyStore, password);
+        pdfSigner.setExternalSigning(false);
+        pdfSigner.setTsaClient(null);
+        document.addSignature(pdSignature, pdfSigner);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        document.saveIncremental(byteArrayOutputStream);
+
+        document.close();
+        if (!tempFile.delete()) {
+            //TODO unable to cleanup
+        }
+
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private PDSignature getPdSignature() {
+        PDSignature signature = new PDSignature();
+        signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
+        signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
+        signature.setName("Mormont Application");
+        signature.setLocation("Cluj-Napoca, Romania");
+        signature.setReason("Valid document.");
+        signature.setSignDate(Calendar.getInstance());
+        return signature;
     }
 }

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -58,6 +59,7 @@ public class Controller {
     private static final String INVALIDATE_SESSION = "/invalidate";
     private static final String FINALIZARE = "/finalizare";
     private static final String DOCS_TO_REVIEW = "/getDocumentsToReview";
+    private static final String DOWNLOAD = "/downloadPdf";
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -476,6 +478,36 @@ public class Controller {
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+    @Value("${server.ssl.key-store}")
+    private String keyStoreLocation;
+    @Value("${server.ssl.key-store-password}")
+    private String keyStorePassword;
+    @Value("${server.ssl.keyStoreType}")
+    private String keyStoreType;
+
+    @RequestMapping(value = DOWNLOAD, produces = "application/pdf", method = GET)
+    public ResponseEntity<byte[]> downloadDoc(HttpServletRequest request, Authentication auth) {
+        try {
+            if (auth == null) {
+                return new ResponseEntity<>(UNAUTHORIZED);
+            }
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+
+            //String doc = "HARDCODED VALUE";
+            String doc = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc));
+
+            byte[] docAsPdf = mService.getDocumentAsPdf(doc, keyStoreLocation, keyStorePassword, keyStoreType);
+
+            return new ResponseEntity<>(docAsPdf, OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to download document:", exception);
+
+            return new ResponseEntity<>(BAD_REQUEST);
         }
     }
 }
