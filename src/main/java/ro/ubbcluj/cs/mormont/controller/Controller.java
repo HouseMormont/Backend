@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -614,16 +613,13 @@ public class Controller {
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
         }
     }
-    @Value("${server.ssl.key-store}")
-    private String keyStoreLocation;
-    @Value("${server.ssl.key-store-password}")
-    private String keyStorePassword;
-    @Value("${server.ssl.keyStoreType}")
-    private String keyStoreType;
 
     @RequestMapping(value = DOWNLOAD, produces = "application/pdf", method = GET)
     public ResponseEntity<byte[]> downloadDoc(HttpServletRequest request, Authentication auth) {
         try {
+            String keyStoreLocation = "keystore.p12";
+            String keyStorePassword = "changeit";
+            String keyStoreType = "PKCS12";
             if (auth == null) {
                 return new ResponseEntity<>(UNAUTHORIZED);
             }
