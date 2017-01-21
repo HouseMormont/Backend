@@ -76,8 +76,8 @@ public class DBHelper {
 //        System.out.print(res);
     }
 
-    public List<Map<String, Object>> getAllDocumentsForUser(String username){
-        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where username = ? UNION SELECT * FROM mormont.referat_necesitate_simple where username = ? ";
+    public List<Map<String, Object>> getAllDocumentsForUser(String username,String docType){
+        String sql = "SELECT * FROM "+ checkDocumentType(docType) +"where username = ? ";
         return jdbcTemplate.queryForList(sql, username,username);
 
     }
