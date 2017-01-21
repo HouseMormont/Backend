@@ -160,10 +160,11 @@ public class Controller {
             JSONObject json = (JSONObject) parser.parse(body);
 
             // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
-            String idDoc = json.getAsString("id");
-            String versionDoc = json.getAsString("versiune");
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("verDoc");
+            String docType = json.getAsString("docType");
 
-            return new ResponseEntity<>(mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc)), OK);
+            return new ResponseEntity<>(mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc),docType), OK);
 
             // TODO populate this json with the response
 
@@ -309,10 +310,10 @@ public class Controller {
 
             // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
             String idDoc = json.getAsString("idDoc");
-            String versionDoc = json.getAsString("versiune");
+            String versionDoc = json.getAsString("verDoc");
             String docType = json.getAsString("docType");
 
-            mService.removeDocument(idDoc, docType);
+            mService.removeDocument(idDoc, versionDoc, docType);
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();

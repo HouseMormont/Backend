@@ -77,9 +77,10 @@ public class DBHelper {
 //        System.out.print(res);
     }
 
-    public List<Map<String, Object>> getAllDocumentsForUser(String username) {
-        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where username = ? UNION SELECT * FROM mormont.referat_necesitate_simple where username = ? ";
-        return jdbcTemplate.queryForList(sql, username, username);
+
+    public List<Map<String, Object>> getAllDocumentsForUser(String username,String docType){
+        String sql = "SELECT * FROM "+ checkDocumentType(docType) +" where username = ? ";
+        return jdbcTemplate.queryForList(sql, username,username);
 
     }
 
@@ -222,9 +223,10 @@ public class DBHelper {
 
     }
 
-    public void deleteDocument(String idDoc, String docType) {
-        String sql = "DELETE FROM " + checkDocumentType(docType) + " where id_dispozitie = ?";
-        jdbcTemplate.update(sql, new Object[]{idDoc});
+    public void deleteDocument(String idDoc, String versiune, String docType) {
+        float ver = Float.parseFloat(versiune);
+        String sql = "DELETE FROM " + checkDocumentType(docType) + " where id_dispozitie = ? AND ROUND(versiune, 1) = ROUND(?, 1)";
+        jdbcTemplate.update(sql, new Object[]{idDoc,ver});
     }
 
     public int getOwner(int id, float ver, String docType) {
