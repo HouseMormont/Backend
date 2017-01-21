@@ -56,12 +56,19 @@ public class Controller {
     private static final String AUTHORIZATION = "/login";
     private static final String FINALIZARE = "/finalizare";
     private static final String DOCS_TO_REVIEW = "/getDocumentsToReview";
+    private static final String CREATE_USER = "/createUser";
+    private static final String DELETE_USER = "/deleteUser";
+    private static final String GET_ALL_USERS = "/getAllUsers";
+    private static final String GET_ALL_AUTHORITIES = "/getAuthorities";
+    private static final String GET_ALL_FUNCTIONS = "/getFunctions";
+    private static final String GET_ALL_TYPES = "/getTypes";
+
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final Service mService;
 
-    public enum DOCUMENTS_TYPE{
+    public enum DOCUMENTS_TYPE {
         DISPOZITIA_RECTORULUI,
         REFERAT_NECESITATE,
     }
@@ -76,7 +83,7 @@ public class Controller {
     @RequestMapping(value = TEST_LOGIN, method = GET)
     public ResponseEntity<String> testLogin(Authentication auth) {
         try {
-            if(auth==null) {
+            if (auth == null) {
                 throw new Exception("Not authenticated");
             }
             return new ResponseEntity<>(HttpStatus.OK);
@@ -99,7 +106,7 @@ public class Controller {
             String versionDoc = request.getParameter("versionDoc");
             String jsonDocument = request.getParameter("jsonDoc");
 
-            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc),"DR");
+            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), "DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -112,6 +119,7 @@ public class Controller {
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
         }
     }
+
     @RequestMapping(value = SAVE_REFERAT_NECESITATE, produces = "application/json", method = POST)
     public ResponseEntity<String> saveReferatNecesitate(Authentication auth, HttpServletRequest request) {
         try {
@@ -126,7 +134,7 @@ public class Controller {
             String versionDoc = request.getParameter("versionDoc");
             String jsonDocument = request.getParameter("jsonDoc");
 
-            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc),"RN");
+            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), "RN");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -179,7 +187,7 @@ public class Controller {
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(body);
 
-            mService.createNewDocument(username, json.get("jsonDoc").toString() , "DR");
+            mService.createNewDocument(username, json.get("jsonDoc").toString(), "DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -205,7 +213,7 @@ public class Controller {
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(body);
 
-            mService.createNewDocument(username, json.get("jsonDoc").toString() , "RN");
+            mService.createNewDocument(username, json.get("jsonDoc").toString(), "RN");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -236,6 +244,7 @@ public class Controller {
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
         }
     }
+
     @RequestMapping(value = GET_ALL_REFERAT_NECESITATE, produces = "application/json", method = POST)
     public ResponseEntity<String> getAllReferatNecesitate(Authentication auth) {
         try {
@@ -255,9 +264,9 @@ public class Controller {
     }
 
     @RequestMapping(value = GET_ALL_DOCUMENTS, produces = "application/json", method = POST)
-    public ResponseEntity<String> getAllDocumentsForUser(Authentication auth){
-        try{
-            if(auth == null){
+    public ResponseEntity<String> getAllDocumentsForUser(Authentication auth) {
+        try {
+            if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
@@ -272,9 +281,9 @@ public class Controller {
     }
 
     @RequestMapping(value = DOCS_TO_REVIEW, produces = "application/json", method = POST)
-    public ResponseEntity<String> getAllDocumentsToReview(Authentication auth){
-        try{
-            if(auth == null){
+    public ResponseEntity<String> getAllDocumentsToReview(Authentication auth) {
+        try {
+            if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
@@ -330,7 +339,7 @@ public class Controller {
             String idDoc = request.getParameter("idDoc");
             String versionDoc = request.getParameter("versionDoc");
 
-            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc),"DR");
+            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), "DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -452,7 +461,130 @@ public class Controller {
 
             return new ResponseEntity<>(response.toString(), OK);
         } catch (Exception exception) {
-            LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
+            LOGGER.log(SEVERE, "Failed to finalize doc:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = GET_ALL_AUTHORITIES, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllAuthorities(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            return new ResponseEntity<>(mService.getAllAuthorities(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to get all authorities:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = GET_ALL_FUNCTIONS, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllFunctions(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            return new ResponseEntity<>(mService.getAllFunctions(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to get all functions:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = GET_ALL_TYPES, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllTypes(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            return new ResponseEntity<>(mService.getAllTypes(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to get all types:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = CREATE_USER, produces = "application/json", method = POST)
+    public ResponseEntity<String> createUser(@RequestBody String body, Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String username = json.getAsString("username");
+            String password = json.getAsString("password");
+            String firstName = json.getAsString("firstName");
+            String lastName = json.getAsString("lastName");
+            int authority = (int)json.getAsNumber("authority");
+            int functie = (int)json.getAsNumber("functie");
+            int type = (int)json.getAsNumber("type");
+
+            mService.createUser(username, password, firstName, lastName, authority, functie, type);
+
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to create user:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = DELETE_USER, produces = "application/json", method = POST)
+    public ResponseEntity<String> deleteUser(@RequestBody String body, Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String username = json.getAsString("username");
+
+
+            mService.deleteUsername(username);
+
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to delete user:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = GET_ALL_USERS, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllUsers(Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            return new ResponseEntity<>(mService.getAllUsers(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to get all users:", exception);
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);

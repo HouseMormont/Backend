@@ -238,4 +238,41 @@ public class Service {
         Gson gson = new Gson();
         return gson.toJson(items);
     }
+
+    public String getAllUsers(){
+        Gson gson = new Gson();
+        List<Map<String,Object>> list = DBHelper.getInstance().getAllUsers();
+
+        return gson.toJson(list);
+    }
+
+
+    public String getAllAuthorities(){
+        Gson gson = new Gson();
+        List<Map<String,Object>> list = DBHelper.getInstance().getAllAuthorities();
+
+        return gson.toJson(list);
+    }
+
+    public String getAllFunctions(){
+        Gson gson = new Gson();
+        List<Map<String,Object>> list = DBHelper.getInstance().getAllFunctions();
+
+        return gson.toJson(list);
+    }
+
+    public String getAllTypes(){
+        Gson gson = new Gson();
+        List<Map<String,Object>> list = DBHelper.getInstance().getAllTypes();
+
+        return gson.toJson(list);
+    }
+
+    public void createUser(String username, String password, String firstName, String lastName, int authority, int functie, int type){
+        DBHelper.getInstance().saveNewUser(username, password, firstName, lastName, authority, functie, type);
+    }
+
+    public void deleteUsername(String username){
+        DBHelper.getInstance().deleteUser(username);
+    }
 }
