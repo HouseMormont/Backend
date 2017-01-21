@@ -47,14 +47,16 @@ public class Controller {
     private static final String CREATE_REFERAT_NECESITATE = "/referatNecesitate/create";
     private static final String GET_ALL_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/getAllDocuments";
     private static final String GET_ALL_REFERAT_NECESITATE = "/referatNecesitate/getAllDocuments";
-    private static final String DELETE_DISPOZITIA_RECTORULUI = "/dispozitiaRectorului/delete";
-    private static final String DELETE_REFERAT_NECESITATE = "/referatNecesitate/delete";
+    private static final String DELETE_DISPOZITIA_RECTORULUI = "/delete";
     private static final String GET_DOCUMENT_BY_ID = "/getDocumentById";
     private static final String GET_ALL_DOCUMENTS = "/getAllDocuments";
     private static final String APPROVE_DOC = "/approveDoc";
     private static final String REJECT_DOC = "/rejectDoc";
     private static final String REVISE_DOC = "/reviseDoc";
     private static final String AUTHORIZATION = "/login";
+    private static final String FINALIZARE = "/finalizare";
+    private static final String DOCS_TO_REVIEW = "/getDocumentsToReview";
+
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final Service mService;
@@ -269,18 +271,39 @@ public class Controller {
         }
     }
 
+    @RequestMapping(value = DOCS_TO_REVIEW, produces = "application/json", method = POST)
+    public ResponseEntity<String> getAllDocumentsToReview(Authentication auth){
+        try{
+            if(auth == null){
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+            return new ResponseEntity<>(mService.getAllDocumetsForReviewForList(username), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to get all documents the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = DELETE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
-    public ResponseEntity<String> deleteDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> deleteDispozitiaRectorului(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
-            String username = ((User) auth.getPrincipal()).getUsername();
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
 
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("verDoc");
+            String docType = json.getAsString("docType");
 
+            mService.removeDocument(idDoc, versionDoc, docType);
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -294,30 +317,7 @@ public class Controller {
         }
     }
 
-    @RequestMapping(value = DELETE_REFERAT_NECESITATE, produces = "application/json", method = POST)
-    public ResponseEntity<String> deleteReferatNecesitate(Authentication auth, HttpServletRequest request) {
-        try {
-            if (auth == null) {
-                return getUnauthorizedResponse();
-            }
 
-            String username = ((User) auth.getPrincipal()).getUsername();
-
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
-
-
-            // TODO populate this json with the response
-            JsonObject response = new JsonObject();
-
-            return new ResponseEntity<>(response.toString(), OK);
-        } catch (Exception exception) {
-            LOGGER.log(SEVERE, "Failed to delete the necesity report :", exception);
-
-            JsonObject response = getExceptionDetails(exception);
-            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
-        }
-    }
     @RequestMapping(value = APPROVE_DOC, produces = "application/json", method = POST)
     public ResponseEntity<String> approveDocument(Authentication auth, HttpServletRequest request) {
         try {
@@ -426,6 +426,36 @@ public class Controller {
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping(value = FINALIZARE, produces = "application/json", method = POST)
+    public ResponseEntity<String> startDocumentFlow(@RequestBody String body, Authentication auth, HttpServletRequest request) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("verDoc");
+            String docType = json.getAsString("docType");
+            mService.startDocumentFlow(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), username, docType);
+
+            // TODO populate this json with the response
+            JsonObject response = new JsonObject();
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
         }
     }
 }

@@ -71,6 +71,18 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Flux` (
   FOREIGN KEY (id_tip_solicitant) REFERENCES Dispozitia_Rectorului_tip_solicitant (id)
 );
 
+CREATE TABLE IF NOT EXISTS `UserType`(
+  id INT AUTO_INCREMENT,
+  denumire VARCHAR(30),
+
+    PRIMARY KEY (`id`)
+);
+
+INSERT INTO UserType (denumire) VALUES ("Administrator");
+INSERT INTO UserType (denumire) VALUES ("Contributor");
+INSERT INTO UserType (denumire) VALUES ("Manager");
+INSERT INTO UserType (denumire) VALUES ("Cititor");
+
 CREATE TABLE IF NOT EXISTS `Users` (
   id        INT AUTO_INCREMENT,
   username  VARCHAR(50),
@@ -79,11 +91,13 @@ CREATE TABLE IF NOT EXISTS `Users` (
   prenume   VARCHAR(20),
   authority INT,
   functie   INT,
+  type INT,
 
 
   PRIMARY KEY (`id`),
   FOREIGN KEY (`authority`) REFERENCES Dispozitia_Rectorului_tip_avizare (`id`),
-  FOREIGN KEY (`functie`) REFERENCES Dispozitia_Rectorului_tip_solicitant (`id`)
+  FOREIGN KEY (`functie`) REFERENCES Dispozitia_Rectorului_tip_solicitant (`id`),
+  FOREIGN KEY (`type`) REFERENCES UserType (`id`)
 );
 
 #   CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului`(
