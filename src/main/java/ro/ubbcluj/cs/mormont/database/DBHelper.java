@@ -80,7 +80,7 @@ public class DBHelper {
 
     public List<Map<String, Object>> getAllDocumentsForUser(String username,String docType){
         String sql = "SELECT * FROM "+ checkDocumentType(docType) +" where username = ? ";
-        return jdbcTemplate.queryForList(sql, username,username);
+        return jdbcTemplate.queryForList(sql, username);
 
     }
 
