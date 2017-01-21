@@ -631,9 +631,10 @@ public class Controller {
 
             String idDoc = request.getParameter("idDoc");
             String versionDoc = request.getParameter("versionDoc");
+            String docType = request.getParameter("docType");
 
             //String doc = "HARDCODED VALUE";
-            String doc = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc));
+            String doc = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), docType);
 
             byte[] docAsPdf = mService.getDocumentAsPdf(doc, keyStoreLocation, keyStorePassword, keyStoreType);
 

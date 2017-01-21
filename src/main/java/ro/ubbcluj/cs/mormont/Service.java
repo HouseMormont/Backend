@@ -307,6 +307,7 @@ public class Service {
         signature.setReason("Valid document.");
         signature.setSignDate(Calendar.getInstance());
         return signature;
+    }
 
     public String getAllUsers(){
         Gson gson = new Gson();
