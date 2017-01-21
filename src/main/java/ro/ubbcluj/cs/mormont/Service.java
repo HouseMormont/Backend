@@ -116,11 +116,11 @@ public class Service {
     }
 
 
-    public String getDocumentById(String username, float versiune, int idDocument) {
-        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username);
+    public String getDocumentById(String username, float versiune, int idDocument,String docType) {
+        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username,docType);
         Gson gson = new Gson();
         for (Map row : documents) {
-            if ((Float) row.get("id_dispozitie") == idDocument && (int) row.get("versiune") == versiune)
+            if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune)
                 return gson.toJson(row);
         }
 
@@ -213,8 +213,8 @@ public class Service {
         return DBHelper.getInstance().getDocumentJson(id, versiune, documentType);
     }
 
-    public void removeDocument(String idDoc, String docType) {
-        DBHelper.getInstance().deleteDocument(idDoc, docType);
+    public void removeDocument(String idDoc,String versiune, String docType) {
+        DBHelper.getInstance().deleteDocument(idDoc,versiune, docType);
     }
 
     public String getAllDocumetsForReviewForList(String username) {
@@ -307,5 +307,41 @@ public class Service {
         signature.setReason("Valid document.");
         signature.setSignDate(Calendar.getInstance());
         return signature;
+
+    public String getAllUsers(){
+        Gson gson = new Gson();
+        List<Map<String,Object>> list = DBHelper.getInstance().getAllUsers();
+
+        return gson.toJson(list);
+    }
+
+
+    public String getAllAuthorities(){
+        Gson gson = new Gson();
+        List<Map<String,Object>> list = DBHelper.getInstance().getAllAuthorities();
+
+        return gson.toJson(list);
+    }
+
+    public String getAllFunctions(){
+        Gson gson = new Gson();
+        List<Map<String,Object>> list = DBHelper.getInstance().getAllFunctions();
+
+        return gson.toJson(list);
+    }
+
+    public String getAllTypes(){
+        Gson gson = new Gson();
+        List<Map<String,Object>> list = DBHelper.getInstance().getAllTypes();
+
+        return gson.toJson(list);
+    }
+
+    public void createUser(String username, String password, String firstName, String lastName, int authority, int functie, int type){
+        DBHelper.getInstance().saveNewUser(username, password, firstName, lastName, authority, functie, type);
+    }
+
+    public void deleteUsername(String username){
+        DBHelper.getInstance().deleteUser(username);
     }
 }
