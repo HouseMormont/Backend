@@ -102,11 +102,11 @@ public class Service {
     }
 
 
-    public String getDocumentById(String username, float versiune, int idDocument) {
-        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username);
+    public String getDocumentById(String username, float versiune, int idDocument,String docType) {
+        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username,docType);
         Gson gson = new Gson();
         for (Map row : documents) {
-            if ((Float) row.get("id_dispozitie") == idDocument && (int) row.get("versiune") == versiune)
+            if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune)
                 return gson.toJson(row);
         }
 
