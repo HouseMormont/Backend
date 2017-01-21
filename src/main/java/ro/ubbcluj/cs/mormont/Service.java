@@ -199,8 +199,8 @@ public class Service {
         return DBHelper.getInstance().getDocumentJson(id, versiune, documentType);
     }
 
-    public void removeDocument(String idDoc, String docType) {
-        DBHelper.getInstance().deleteDocument(idDoc, docType);
+    public void removeDocument(String idDoc,String versiune, String docType) {
+        DBHelper.getInstance().deleteDocument(idDoc,versiune, docType);
     }
 
     public String getAllDocumetsForReviewForList(String username) {

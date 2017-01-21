@@ -228,9 +228,10 @@ public class DBHelper {
 
     }
 
-    public void deleteDocument(String idDoc, String docType) {
-        String sql = "DELETE FROM " + checkDocumentType(docType) + " where id_dispozitie = ?";
-        jdbcTemplate.update(sql, new Object[]{idDoc});
+    public void deleteDocument(String idDoc, String versiune, String docType) {
+        float ver = Float.parseFloat(versiune);
+        String sql = "DELETE FROM " + checkDocumentType(docType) + " where id_dispozitie = ? AND ROUND(versiune, 1) = ROUND(?, 1)";
+        jdbcTemplate.update(sql, new Object[]{idDoc,ver});
     }
 
       public int getOwner(int id, float ver, String docType){
