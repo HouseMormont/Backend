@@ -1,6 +1,8 @@
 package ro.ubbcluj.cs.mormont;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -24,8 +26,6 @@ import java.security.cert.CertificateException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static ro.ubbcluj.cs.mormont.controller.Controller.DOCUMENTS_TYPE.DISPOZITIA_RECTORULUI;
 
 /**
  * Created by tudorlozba on 04/01/2017.
@@ -120,25 +120,12 @@ public class Service {
 
     public String getDocumentById(String username, float versiune, int idDocument,String docType) {
         List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username,docType);
-        Gson gson = new Gson();
         for (Map row : documents) {
             if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune) {
-                String type;
-                if (docType.equals("DR")) {
-                    type = "Dispozitia rectorului";
-                } else if (docType.equals("RN")) {
-                    type = "Referat necesitate";
-                } else {
-                    throw new RuntimeException("Unrecognized type");
-                }
-                DocumentListItem item = new DocumentListItem(
-                        (int) row.get("id_dispozitie"),
-                        (float) row.get("versiune"),
-                        (String) row.get("data"),
-                        type,
-                        getApprovalName((Integer) row.get("id_aprobare"))
-                );
-                return gson.toJson(item);
+                JsonParser parser = new JsonParser();
+                JsonObject obj = parser.parse(String.valueOf(documents.get(0).get("documentJson"))).getAsJsonObject();
+                row.put("documentJson", obj);
+                return new Gson().toJson(row);
             }
         }
 
