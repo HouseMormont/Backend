@@ -28,6 +28,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static ro.ubbcluj.cs.mormont.entity.Headers.PASSWORD;
 import static ro.ubbcluj.cs.mormont.entity.Headers.USERNAME;
+import static ro.ubbcluj.cs.mormont.entity.Responses.MESSAGE;
 import static ro.ubbcluj.cs.mormont.utils.InputsUtil.getRequiredHeader;
 import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.*;
 
@@ -54,6 +55,7 @@ public class Controller {
     private static final String REJECT_DOC = "/rejectDoc";
     private static final String REVISE_DOC = "/reviseDoc";
     private static final String AUTHORIZATION = "/login";
+    private static final String INVALIDATE_SESSION = "/invalidate";
     private static final String FINALIZARE = "/finalizare";
     private static final String DOCS_TO_REVIEW = "/getDocumentsToReview";
 
@@ -453,6 +455,24 @@ public class Controller {
             return new ResponseEntity<>(response.toString(), OK);
         } catch (Exception exception) {
             LOGGER.log(SEVERE, "Failed to save the rector disposition:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+    @RequestMapping(value = INVALIDATE_SESSION, produces = "application/json", method = POST)
+    public ResponseEntity<String> invalidateSession(Authentication auth) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+            SecurityContextHolder.getContext().setAuthentication(null);
+            JsonObject response = new JsonObject();
+            response.addProperty(MESSAGE.getValue(), "Success");
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to invalidate session:", exception);
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
