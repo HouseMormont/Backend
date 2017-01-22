@@ -229,7 +229,7 @@ public class Service {
         int userAuthority = DBHelper.getInstance().getUserTypeId(username);
 
         for (Map row : documents) {
-            if (userAuthority == (int) row.get("id_aprobare")) {
+            if (row.get("id_aprobare") != null &&userAuthority == (int) row.get("id_aprobare")) {
                 DocumentListItem item = new DocumentListItem(
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
@@ -242,7 +242,7 @@ public class Service {
         }
         documents = DBHelper.getInstance().getAllRNForUser(username);
         for (Map row : documents) {
-            if (userAuthority == (int) row.get("id_aprobare")) {
+            if (row.get("id_aprobare") != null && userAuthority == (int) row.get("id_aprobare")) {
                 DocumentListItem item = new DocumentListItem(
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
