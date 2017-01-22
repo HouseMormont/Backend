@@ -28,6 +28,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static ro.ubbcluj.cs.mormont.entity.Headers.PASSWORD;
 import static ro.ubbcluj.cs.mormont.entity.Headers.USERNAME;
+import static ro.ubbcluj.cs.mormont.entity.Responses.MESSAGE;
 import static ro.ubbcluj.cs.mormont.utils.InputsUtil.getRequiredHeader;
 import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.*;
 
@@ -54,8 +55,11 @@ public class Controller {
     private static final String REJECT_DOC = "/rejectDoc";
     private static final String REVISE_DOC = "/reviseDoc";
     private static final String AUTHORIZATION = "/login";
+    private static final String INVALIDATE_SESSION = "/invalidate";
     private static final String FINALIZARE = "/finalizare";
     private static final String DOCS_TO_REVIEW = "/getDocumentsToReview";
+    private static final String DOWNLOAD = "/downloadPdf";
+
     private static final String CREATE_USER = "/createUser";
     private static final String DELETE_USER = "/deleteUser";
     private static final String GET_ALL_USERS = "/getAllUsers";
@@ -164,7 +168,9 @@ public class Controller {
             String versionDoc = json.getAsString("verDoc");
             String docType = json.getAsString("docType");
 
-            return new ResponseEntity<>(mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc),docType), OK);
+            String documentById = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), docType);
+
+            return new ResponseEntity<>(documentById, OK);
 
             // TODO populate this json with the response
 
@@ -589,6 +595,52 @@ public class Controller {
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+    @RequestMapping(value = INVALIDATE_SESSION, produces = "application/json", method = POST)
+    public ResponseEntity<String> invalidateSession(Authentication auth) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+            SecurityContextHolder.getContext().setAuthentication(null);
+            JsonObject response = new JsonObject();
+            response.addProperty(MESSAGE.getValue(), "Success");
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to invalidate session:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = DOWNLOAD, produces = "application/pdf", method = GET)
+    public ResponseEntity<byte[]> downloadDoc(HttpServletRequest request, Authentication auth) {
+        try {
+            String keyStoreLocation = "keystore.p12";
+            String keyStorePassword = "changeit";
+            String keyStoreType = "PKCS12";
+            if (auth == null) {
+                return new ResponseEntity<>(UNAUTHORIZED);
+            }
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("versionDoc");
+            String docType = request.getParameter("docType");
+
+            //String doc = "HARDCODED VALUE";
+            String doc = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), docType);
+
+            byte[] docAsPdf = mService.getDocumentAsPdf(doc, keyStoreLocation, keyStorePassword, keyStoreType);
+
+            return new ResponseEntity<>(docAsPdf, OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to download document:", exception);
+
+            return new ResponseEntity<>(BAD_REQUEST);
         }
     }
 }
