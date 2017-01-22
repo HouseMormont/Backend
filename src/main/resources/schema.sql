@@ -71,6 +71,17 @@ CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Flux` (
   FOREIGN KEY (id_tip_solicitant) REFERENCES Dispozitia_Rectorului_tip_solicitant (id)
 );
 
+CREATE TABLE IF NOT EXISTS `Referat_Necesitate_Flux` (
+  id                INT     AUTO_INCREMENT,
+  id_tip_solicitant INT,
+  id_tip_avizare    INT,
+  final             BOOLEAN DEFAULT 0,
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (id_tip_avizare) REFERENCES Dispozitia_Rectorului_tip_avizare (id),
+  FOREIGN KEY (id_tip_solicitant) REFERENCES Dispozitia_Rectorului_tip_solicitant (id)
+);
+
 CREATE TABLE IF NOT EXISTS `UserType`(
   id INT AUTO_INCREMENT,
   denumire VARCHAR(30),
@@ -359,6 +370,9 @@ INSERT INTO Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Director proi
 INSERT INTO Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Director departament');
 INSERT INTO Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Director scoala doctorala');
 INSERT INTO Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Sef direct');
+INSERT INTO Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Fara drepturi');
+INSERT INTO Dispozitia_Rectorului_tip_avizare (descriere) VALUES ('Administrator sef');
+
 
 INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Studenti (Fara finantare)');
 INSERT INTO Dispozitia_Rectorului_tip_solicitant (descriere) VALUES ('Studenti (Cu finantare, fonduri facultate)');
@@ -472,6 +486,87 @@ INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare) VALUE
 INSERT INTO Dispozitia_Rectorului_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (21, 4, 1);
 
 
+######################################## FLUX REFERAT NECESITATE
+
+
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (2, 12, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (2, 1, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (2, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (2, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (7, 12, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (7, 1, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (7, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (7, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (18, 12, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (18, 1, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (18, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (18, 4, 1);
+
+
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (4, 5, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (4, 6, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (4, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (4, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (8, 5, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (8, 6, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (8, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (8, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (12, 5, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (12, 6, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (12, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (12, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (15, 5, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (15, 6, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (15, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (15, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (19, 5, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (19, 6, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (19, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (19, 4, 1);
+
+
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (5, 7, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (5, 6, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (5, 12, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (5, 1, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (5, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (5, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (9, 7, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (9, 6, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (9, 12, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (9, 1, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (9, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (9, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (20, 7, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (20, 6, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (20, 12, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (20, 1, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (20, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (20, 4, 1);
+
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (3, 10, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (3, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (3, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (10, 10, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (10, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (10, 4, 1);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (21, 10, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (21, 2, 0);
+INSERT INTO Referat_Necesitate_Flux (id_tip_solicitant, id_tip_avizare, final) VALUES (21, 4, 1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 CREATE TABLE IF NOT EXISTS `Dispozitia_Rectorului_Simple` (
 
   id_dispozitie INT,
@@ -503,6 +598,57 @@ CREATE TABLE IF NOT EXISTS `Referat_Necesitate_Simple` (
   FOREIGN KEY (`tip_initiator`) REFERENCES Dispozitia_Rectorului_tip_solicitant (`id`)
 
 );
+
+
+
+
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("popescu.bogdan", "1234", "Popescu", "Bogdan", 11,18,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("popovici.daniel", "1234", "Popovici", "Daniel", 10,18,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("gherasim.vlad", "1234", "Gherasim", "Vlad", 1,18,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("dascalu.mihai", "1234", "Dascalu", "Mihai", 2,18,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("badila.anca", "1234", "Badila", "Anca", 11,19,1);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("stoica.elena", "1234", "Stoica", "Elena", 10,19,1);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("enache.alin", "1234", "Enache", "Alin", 5,19,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("apostol.ana", "1234", "Apostol", "Ana", 6,19,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("muresan.maria", "1234", "Muresan", "Maria", 2,19,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("negrila.alex", "1234", "Negrila", "Alex", 11,20,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("cobeanu.george", "1234", "Cobeanu", "George", 1,20,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("mihai.ilie", "1234", "Mihai", "Ilie", 10,20,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("iacob.denisa", "1234", "Iacob", "Denisa", 7,20,1);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("pop.violeta", "1234", "Pop", "Violeta", 6,20,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("dragan.andrei", "1234", "Dragan", "Andrei", 2,20,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("dinu.laura", "1234", "Dinu", "Laura", 11,1,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("luca.andreea", "1234", "Luca", "Andreea", 1,1,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("spataru.ovidiu", "1234", "Spataru", "Ovidiu", 11,3,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("dumitrescu.cristi", "1234", "Dumitrescu", "Cristi", 4,3,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("aldea.mircea", "1234", "Aldea", "Mircea", 1,3,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("draghici.anita", "1234", "Draghici", "Anita", 11,7,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("ciutacu.gabriela", "1234", "Ciutacu", "Gabriela", 8,7,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("mandru.razvan", "1234", "Mandru", "Razvan", 1,7,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("nitulescu.ana", "1234", "Nitulescu", "Ana", 2,7,3);
+
+
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("coman.ioana", "1234", "Coman", "Ioana", 11,18,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("nicolau.stefan", "1234", "Nicolau", "Stefan", 12,18,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("moja.bianca", "1234", "Moja", "Bianca", 1,18,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("topliceanu.george", "1234", "Topliceanu", "George", 2,18,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("comosu.livia", "1234", "Comosu", "Livia", 4,18,1);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("pripici.camelia", "1234", "Pripici", "Camelia", 11,10,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("marchis.adriana", "1234", "Marchis", "Adriana", 10,10,3);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("craciun.mihai", "1234", "Craciun", "Mihai", 2,10,2);
+INSERT INTO Users (username, password, nume, prenume, authority, functie, type) VALUES ("burlacu.mircea", "1234", "Burlacu", "Mircea", 4,10,1); 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
