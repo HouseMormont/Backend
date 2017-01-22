@@ -7,6 +7,7 @@ public class DocumentListItem {
     private int id;
     private float versiune;
     private String data;
+    private String ownerName;
 
     public String getTipDocumet() {
         return tipDocumet;
@@ -27,10 +28,11 @@ public class DocumentListItem {
     private String tipDocumet;
     private String aveizare;
 
-    public DocumentListItem(int id, float versiune, String data, String tip, String avizare) {
+    public DocumentListItem(int id, float versiune, String data, String ownerName, String tip, String avizare) {
         this.id = id;
         this.versiune = versiune;
         this.data = data;
+        this.ownerName = ownerName;
         this.tipDocumet = tip;
         this.aveizare = avizare;
     }
@@ -57,5 +59,13 @@ public class DocumentListItem {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 }

@@ -345,7 +345,7 @@ public class Controller {
 
 
     @RequestMapping(value = APPROVE_DOC, produces = "application/json", method = POST)
-    public ResponseEntity<String> approveDocument(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> approveDocument(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
@@ -353,8 +353,14 @@ public class Controller {
             String docType = "DR";
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("versionDoc");
+            String docType = json.getAsString("docType");
+
+            String username = ((User) auth.getPrincipal()).getUsername();
 
             mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
             String doc = mService.getDocumentById(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
@@ -398,16 +404,22 @@ public class Controller {
     }
 
     @RequestMapping(value = REJECT_DOC, produces = "application/json", method = POST)
-    public ResponseEntity<String> rejectDocument(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> rejectDocument(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("versionDoc");
+            String docType = json.getAsString("docType");
+
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
+            mService.reject(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
 
 
             // TODO populate this json with the response
