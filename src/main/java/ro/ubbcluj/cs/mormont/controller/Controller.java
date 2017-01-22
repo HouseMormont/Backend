@@ -115,7 +115,7 @@ public class Controller {
             double versionDoc = (double)json.get("versionDoc");
             String jsonDocument = json.get("jsonDoc").toString();
 
-            mService.updateDocument(username, jsonDocument, Float.parseFloat("0.3"), idDoc, "DR");
+            mService.updateDocument(username, jsonDocument, (float)versionDoc, idDoc, "DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
