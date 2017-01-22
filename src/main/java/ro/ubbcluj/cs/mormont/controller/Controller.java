@@ -348,6 +348,8 @@ public class Controller {
 
             mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), "DR");
 
+            // TODO replace with users email
+            mService.sendMail("lucian.bredean@outlook.com", "UBB approval notification", "Your doc has been approved!! Check it now: https://localhost:8989");
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
 
@@ -628,7 +630,7 @@ public class Controller {
             String username = ((User) auth.getPrincipal()).getUsername();
 
             String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
+            String versionDoc = request.getParameter("verDoc");
             String docType = request.getParameter("docType");
 
             //String doc = "HARDCODED VALUE";
