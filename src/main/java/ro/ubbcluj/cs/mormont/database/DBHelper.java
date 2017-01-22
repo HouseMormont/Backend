@@ -242,11 +242,11 @@ public class DBHelper {
         return (String) row.get(0).get("username");
     }
 
-    public void saveNewUser(String username, String password, String firstName, String lastName, int authority, int function, int type) {
+    public void saveNewUser(String username, String password, String firstName, String lastName, int authority, String email, int function, int type) {
         String sql = "INSERT INTO Users" +
-                " (username, password, nume, prenume, authority, functie, type) VALUES (?,?,?,?,?,?,?)";
+                " (username, password, nume, prenume, authority, functie, type, email) VALUES (?,?,?,?,?,?,?)";
 
-        jdbcTemplate.update(sql, new Object[]{username, password, lastName, firstName, authority, function, type});
+        jdbcTemplate.update(sql, new Object[]{username, password, lastName, firstName, authority, function, type, email});
     }
 
 

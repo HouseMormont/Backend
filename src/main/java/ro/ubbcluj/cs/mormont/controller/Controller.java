@@ -550,11 +550,12 @@ public class Controller {
             String password = json.getAsString("password");
             String firstName = json.getAsString("firstName");
             String lastName = json.getAsString("lastName");
+            String email = json.getAsString("email");
             int authority = (int)json.getAsNumber("authority");
             int functie = (int)json.getAsNumber("functie");
             int type = (int)json.getAsNumber("type");
 
-            mService.createUser(username, password, firstName, lastName, authority, functie, type);
+            mService.createUser(username, password, firstName, lastName, email, authority, functie, type);
 
             JsonObject response = new JsonObject();
 

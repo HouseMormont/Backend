@@ -350,8 +350,8 @@ public class Service {
         return gson.toJson(list);
     }
 
-    public void createUser(String username, String password, String firstName, String lastName, int authority, int functie, int type){
-        DBHelper.getInstance().saveNewUser(username, password, firstName, lastName, authority, functie, type);
+    public void createUser(String username, String password, String firstName, String lastName, String email, int authority, int functie, int type){
+        DBHelper.getInstance().saveNewUser(username, password, firstName, lastName, authority, email, functie, type);
     }
 
     public void deleteUsername(String username){
