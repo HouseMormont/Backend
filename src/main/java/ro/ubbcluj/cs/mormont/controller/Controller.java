@@ -97,7 +97,7 @@ public class Controller {
     }
 
     @RequestMapping(value = SAVE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
-    public ResponseEntity<String> saveDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> saveDispozitiaRectorului(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
@@ -105,12 +105,17 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
-            String jsonDocument = request.getParameter("jsonDoc");
 
-            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), "DR");
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            int idDoc = (int)json.get("idDoc");
+            double versionDoc = (double)json.get("versionDoc");
+            String jsonDocument = json.get("jsonDoc").toString();
+
+            mService.updateDocument(username, jsonDocument, Float.parseFloat("0.3"), idDoc, "DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -125,7 +130,7 @@ public class Controller {
     }
 
     @RequestMapping(value = SAVE_REFERAT_NECESITATE, produces = "application/json", method = POST)
-    public ResponseEntity<String> saveReferatNecesitate(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> saveReferatNecesitate(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
@@ -133,12 +138,16 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
-            String jsonDocument = request.getParameter("jsonDoc");
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
 
-            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), "RN");
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            int idDoc = (int)json.get("idDoc");
+            double versionDoc = (double)json.get("versionDoc");
+            String jsonDocument = json.get("jsonDoc").toString();
+
+            mService.updateDocument(username, jsonDocument, (float) (versionDoc), idDoc, "RN");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();

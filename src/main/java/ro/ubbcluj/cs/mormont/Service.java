@@ -123,7 +123,7 @@ public class Service {
         for (Map row : documents) {
             if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune) {
                 JsonParser parser = new JsonParser();
-                JsonObject obj = parser.parse(String.valueOf(documents.get(0).get("documentJson"))).getAsJsonObject();
+                JsonObject obj = parser.parse(String.valueOf(row.get("documentJson"))).getAsJsonObject();
                 row.put("documentJson", obj);
                 return new Gson().toJson(row);
             }
