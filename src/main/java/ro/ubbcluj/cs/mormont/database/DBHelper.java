@@ -121,8 +121,7 @@ public class DBHelper {
 
         return -1;
     }
-
-    public int getUserAuthority(String username) {
+    public int getUserAuthorityId(String username) {
         String sql = "SELECT * FROM mormont.Users where username = ?";
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, username);
 
@@ -134,6 +133,7 @@ public class DBHelper {
 
         return -1;
     }
+
 
     private String checkDocumentType(String documentType) {
         switch (documentType) {
@@ -177,8 +177,15 @@ public class DBHelper {
     }
 
 
-    public List<Map<String, Object>> getFlowForUserType(int userTypeId) {
-        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Flux WHERE id_tip_solicitant = ?";
+    public List<Map<String, Object>> getFlowForUserType(int userTypeId,String docType) {
+        String sql="";
+        if (docType.equals("DR")) {
+           sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Flux WHERE id_tip_solicitant = ?";
+        }else if(docType.equals("RN")){
+
+            sql = "SELECT * FROM mormont.Referat_Necesitate_Flux WHERE id_tip_solicitant = ?";
+
+        }
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, userTypeId);
         return rows;
 
@@ -307,7 +314,13 @@ public class DBHelper {
         return  jdbcTemplate.queryForList(sql);
     }
 
-    public String getUsersEmail(String username) {
+    public void reviseDoc(int id, float versiune, String docType) {
+        String sql = "UPDATE " + checkDocumentType(docType) + " SET id_aprobare = NULL, versiune = " + ((float)versiune+(float)0.1);
+        sql += " WHERE id_dispozitie = ? and ROUND(versiune, 1) = ROUND(?, 1)";
+
+        jdbcTemplate.update(sql, new Object[]{id, versiune});
+    }
+  public String getUsersEmail(String username) {
         String sql = "SELECT * FROM  mormont.users where username = ?";
         List<Map<String, Object>> row = jdbcTemplate.queryForList(sql, username);
         //return String.valueOf(row.get(0).get("email"));

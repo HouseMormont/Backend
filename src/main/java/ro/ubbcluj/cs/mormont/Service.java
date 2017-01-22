@@ -36,20 +36,9 @@ import java.util.*;
  */
 public class Service {
 
-    public static final String MAIL_USER = "cinemaflorinalin@gmail.com";
-    public static final String MAIL_PASSWORD = "changeit";
+    public static final String MAIL_USER = "tudor_l95@yahoo.com";
+    public static final String MAIL_PASSWORD = "toshiba";
 
-    @NotNull
-    private static Properties getMailProperties() {
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.socketFactory.port", "465");
-        props.put("mail.smtp.socketFactory.class",
-                "javax.net.ssl.SSLSocketFactory");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "465");
-        return props;
-    }
 
     public void createNewDocument(String username, String document, String documentType) {
 
@@ -69,7 +58,7 @@ public class Service {
 
     public void startDocumentFlow(int id, float versiune, String username, String documentType) {
         float newVersion = (float) 1.0;
-        int aprobare = getFirstApprovalNeededForDocument(DBHelper.getInstance().getUserTypeId(username));
+        int aprobare = getFirstApprovalNeededForDocument(DBHelper.getInstance().getUserTypeId(username),documentType);
 
 
         DBHelper.getInstance().makeDocumentFinal(
@@ -89,10 +78,10 @@ public class Service {
         int initiator = (int) document.get("tip_initiator");
         int aprobare = (int) document.get("id_aprobare");
 
-        if (isApprovalFinal(initiator, aprobare)) {
+        if (isApprovalFinal(initiator, aprobare,documentType)) {
             markDocumentFinalized(id, versiune, documentType);
         } else {
-            int nextApproval = getNextApproval(initiator, aprobare);
+            int nextApproval = getNextApproval(initiator, aprobare,documentType);
             if (nextApproval == -1) {
                 throw new Exception("Something went wrong! Next Approval not found in the database");
             }
@@ -102,8 +91,8 @@ public class Service {
 
     }
 
-    private int getNextApproval(int initiator, int aprobare) {
-        List<Map<String, Object>> flow = DBHelper.getInstance().getFlowForUserType(initiator);
+    private int getNextApproval(int initiator, int aprobare,String documentType) {
+        List<Map<String, Object>> flow = DBHelper.getInstance().getFlowForUserType(initiator,documentType);
 
         for (Map row : flow) {
             if ((int) row.get("id_tip_avizare") == aprobare) {
@@ -118,8 +107,8 @@ public class Service {
         DBHelper.getInstance().updateDocumentStatus(id, versiune, -1, documentType);
     }
 
-    private boolean isApprovalFinal(int initiator, int aprobare) {
-        List<Map<String, Object>> flow = DBHelper.getInstance().getFlowForUserType(initiator);
+    private boolean isApprovalFinal(int initiator, int aprobare, String documentType) {
+        List<Map<String, Object>> flow = DBHelper.getInstance().getFlowForUserType(initiator,documentType);
 
         for (Map row : flow) {
             if ((int) row.get("id_tip_avizare") == aprobare && (boolean) row.get("final")) {
@@ -130,8 +119,8 @@ public class Service {
         return false;
     }
 
-    private int getFirstApprovalNeededForDocument(int userTypeId) {
-        List<Map<String, Object>> result = DBHelper.getInstance().getFlowForUserType(userTypeId);
+    private int getFirstApprovalNeededForDocument(int userTypeId ,String documentType) {
+        List<Map<String, Object>> result = DBHelper.getInstance().getFlowForUserType(userTypeId,documentType);
         return (int) result.get(0).get("id_tip_avizare");
     }
 
@@ -251,7 +240,8 @@ public class Service {
         List<Map<String, Object>> documents = DBHelper.getInstance().getAllDR();
         List<DocumentListItem> items = new ArrayList<>();
 
-        int userAuthority = DBHelper.getInstance().getUserAuthority(username);
+
+        int userAuthority = DBHelper.getInstance().getUserAuthorityId(username);
 
         for (Map row : documents) {
             if (row.get("id_aprobare") != null && userAuthority == (int) row.get("id_aprobare")) {
@@ -394,6 +384,17 @@ public class Service {
         Transport.send(message);
     }
 
+    @NotNull
+    private static Properties getMailProperties() {
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.mail.yahoo.com");
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.socketFactory.class",
+                "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.port", "465");
+        return props;
+    }
     public int getUserTypeId(String username) {
         return DBHelper.getInstance().getUserTypeId(username);
     }
@@ -415,5 +416,9 @@ public class Service {
 
     public void reject(String username, int i, float v, String docType) {
         DBHelper.getInstance().rejectDocument(i, v, docType);
+    }
+
+    public void revise(int id, float versiune, String docType) {
+        DBHelper.getInstance().reviseDoc(id, versiune, docType);
     }
 }
