@@ -39,6 +39,18 @@ public class Service {
     public static final String MAIL_USER = "cinemaflorinalin@gmail.com";
     public static final String MAIL_PASSWORD = "changeit";
 
+    @NotNull
+    private static Properties getMailProperties() {
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.socketFactory.class",
+                "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.port", "465");
+        return props;
+    }
+
     public void createNewDocument(String username, String document, String documentType) {
 
         int id = DBHelper.getInstance().generateID();
@@ -54,7 +66,6 @@ public class Service {
 
         DBHelper.getInstance().saveNewDocumentVersion(idDocument, versiuneNoua, username, idTipSolicitant, document, getDocumentDate(idDocument, documentType), documentType);
     }
-
 
     public void startDocumentFlow(int id, float versiune, String username, String documentType) {
         float newVersion = (float) 1.0;
@@ -124,9 +135,16 @@ public class Service {
         return (int) result.get(0).get("id_tip_avizare");
     }
 
+    public String getDocumentById(int idDocument, float versiune, String docType) {
+        Map<String, Object> document = DBHelper.getInstance().getDocument(idDocument, versiune, docType);
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(String.valueOf(document.get("documentJson"))).getAsJsonObject();
+        document.put("documentJson", obj);
+        return new Gson().toJson(document);
+    }
 
-    public String getDocumentById(String username, float versiune, int idDocument,String docType) {
-        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username,docType);
+    public String getDocumentById(String username, float versiune, int idDocument, String docType) {
+        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username, docType);
         for (Map row : documents) {
             if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune) {
                 JsonParser parser = new JsonParser();
@@ -225,8 +243,8 @@ public class Service {
         return DBHelper.getInstance().getDocumentJson(id, versiune, documentType);
     }
 
-    public void removeDocument(String idDoc,String versiune, String docType) {
-        DBHelper.getInstance().deleteDocument(idDoc,versiune, docType);
+    public void removeDocument(String idDoc, String versiune, String docType) {
+        DBHelper.getInstance().deleteDocument(idDoc, versiune, docType);
     }
 
     public String getAllDocumetsForReviewForList(String username) {
@@ -267,7 +285,7 @@ public class Service {
     }
 
     public byte[] getDocumentAsPdf(String doc, String keyStoreLocation, String keyStorePassword, String keyStoreType) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        String tempName = String.valueOf(UUID.randomUUID())+".pdf";
+        String tempName = String.valueOf(UUID.randomUUID()) + ".pdf";
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
 
@@ -322,40 +340,39 @@ public class Service {
         return signature;
     }
 
-    public String getAllUsers(){
+    public String getAllUsers() {
         Gson gson = new Gson();
-        List<Map<String,Object>> list = DBHelper.getInstance().getAllUsers();
+        List<Map<String, Object>> list = DBHelper.getInstance().getAllUsers();
 
         return gson.toJson(list);
     }
 
-
-    public String getAllAuthorities(){
+    public String getAllAuthorities() {
         Gson gson = new Gson();
-        List<Map<String,Object>> list = DBHelper.getInstance().getAllAuthorities();
+        List<Map<String, Object>> list = DBHelper.getInstance().getAllAuthorities();
 
         return gson.toJson(list);
     }
 
-    public String getAllFunctions(){
+    public String getAllFunctions() {
         Gson gson = new Gson();
-        List<Map<String,Object>> list = DBHelper.getInstance().getAllFunctions();
+        List<Map<String, Object>> list = DBHelper.getInstance().getAllFunctions();
 
         return gson.toJson(list);
     }
 
-    public String getAllTypes(){
+    public String getAllTypes() {
         Gson gson = new Gson();
-        List<Map<String,Object>> list = DBHelper.getInstance().getAllTypes();
+        List<Map<String, Object>> list = DBHelper.getInstance().getAllTypes();
 
         return gson.toJson(list);
     }
 
-    public void createUser(String username, String password, String firstName, String lastName, int authority, int functie, int type){
-        DBHelper.getInstance().saveNewUser(username, password, firstName, lastName, authority, functie, type);
+    public void createUser(String username, String password, String firstName, String lastName, String email, int authority, int functie, int type) {
+        DBHelper.getInstance().saveNewUser(username, password, firstName, lastName, authority, email, functie, type);
     }
 
-    public void deleteUsername(String username){
+    public void deleteUsername(String username) {
         DBHelper.getInstance().deleteUser(username);
     }
 
@@ -377,16 +394,12 @@ public class Service {
         Transport.send(message);
     }
 
-    @NotNull
-    private static Properties getMailProperties() {
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.socketFactory.port", "465");
-        props.put("mail.smtp.socketFactory.class",
-                "javax.net.ssl.SSLSocketFactory");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "465");
-        return props;
+    public int getUserTypeId(String username) {
+        return DBHelper.getInstance().getUserTypeId(username);
+    }
+
+    public String getUserEmail(String username) {
+        return DBHelper.getInstance().getUsersEmail(username);
     }
 
     private String getUserName(String username){

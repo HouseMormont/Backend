@@ -1,6 +1,7 @@
 package ro.ubbcluj.cs.mormont.controller;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -350,7 +351,6 @@ public class Controller {
                 return getUnauthorizedResponse();
             }
 
-
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(body);
 
@@ -361,10 +361,10 @@ public class Controller {
             String username = ((User) auth.getPrincipal()).getUsername();
 
             mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
+            String doc = mService.getDocumentById(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
+            String docStarterUsername = new JsonParser().parse(doc).getAsJsonObject().get("username").getAsString();
 
-            // TODO replace with users email
-            mService.sendMail("lucian.bredean@outlook.com", "UBB approval notification", "Your doc has been approved!! Check it now: https://localhost:8989");
-            // TODO populate this json with the response
+            mService.sendMail(mService.getUserEmail(docStarterUsername), "UBB approval notification", "Your doc has been approved!! Check it now: https://localhost:8989");
             JsonObject response = new JsonObject();
 
             return new ResponseEntity<>(response.toString(), OK);
@@ -453,10 +453,11 @@ public class Controller {
                 throw new Exception(format("Unable to generate and save token for user %s.", username));
             }
             User user = new User(username, password, authenticate.getAuthorities());
+            int type = mService.getUserTypeId(username);
 
             LOGGER.log(Level.ALL, "Username {0} authenticated with success", new Object[]{username});
 
-            JsonObject response = getAuthDetails(user);
+            JsonObject response = getAuthDetails(user, type);
             return new ResponseEntity<>(response.toString(), OK);
 
         } catch (Exception exception) {
@@ -560,11 +561,12 @@ public class Controller {
             String password = json.getAsString("password");
             String firstName = json.getAsString("firstName");
             String lastName = json.getAsString("lastName");
+            String email = json.getAsString("email");
             int authority = (int)json.getAsNumber("authority");
             int functie = (int)json.getAsNumber("functie");
             int type = (int)json.getAsNumber("type");
 
-            mService.createUser(username, password, firstName, lastName, authority, functie, type);
+            mService.createUser(username, password, firstName, lastName, email, authority, functie, type);
 
             JsonObject response = new JsonObject();
 
@@ -653,8 +655,7 @@ public class Controller {
             String versionDoc = request.getParameter("verDoc");
             String docType = request.getParameter("docType");
 
-            //String doc = "HARDCODED VALUE";
-            String doc = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), docType);
+            String doc = mService.getDocumentById(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
 
             byte[] docAsPdf = mService.getDocumentAsPdf(doc, keyStoreLocation, keyStorePassword, keyStoreType);
 

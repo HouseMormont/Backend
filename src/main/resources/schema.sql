@@ -100,6 +100,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
   password  VARCHAR(255),
   nume      VARCHAR(20),
   prenume   VARCHAR(20),
+  email   VARCHAR(50),
   authority INT,
   functie   INT,
   type INT,

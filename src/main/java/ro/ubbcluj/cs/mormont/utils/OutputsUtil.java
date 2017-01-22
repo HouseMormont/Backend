@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.User;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static ro.ubbcluj.cs.mormont.entity.Responses.AUTHORITIES;
 import static ro.ubbcluj.cs.mormont.entity.Responses.MESSAGE;
+import static ro.ubbcluj.cs.mormont.entity.Responses.USER_TYPE;
 
 /**
  * ****************************************
@@ -20,13 +21,14 @@ public class OutputsUtil {
     //TODO discuss format of the response
     @NotNull
     @Contract("_->!null")
-    public static JsonObject getAuthDetails(User user) {
+    public static JsonObject getAuthDetails(User user, int type) {
         JsonObject result = new JsonObject();
         JsonArray authorities = new JsonArray();
         //TODO only one authority or more?
         user.getAuthorities().forEach(grantedAuthority -> authorities.add(grantedAuthority.toString()));
         result.addProperty(MESSAGE.getValue(), "Success");
         result.add(AUTHORITIES.getValue(), authorities);
+        result.addProperty(USER_TYPE.getValue(), type);
         return result;
     }
 
