@@ -240,6 +240,7 @@ public class Service {
         List<Map<String, Object>> documents = DBHelper.getInstance().getAllDR();
         List<DocumentListItem> items = new ArrayList<>();
 
+
         int userAuthority = DBHelper.getInstance().getUserAuthorityId(username);
 
         for (Map row : documents) {
