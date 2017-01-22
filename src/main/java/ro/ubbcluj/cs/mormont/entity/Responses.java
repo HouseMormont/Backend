@@ -7,7 +7,8 @@ package ro.ubbcluj.cs.mormont.entity;
  */
 public enum Responses {
     MESSAGE("Message"),
-    AUTHORITIES("Authorities");
+    AUTHORITIES("Authorities"),
+    USER_TYPE("UserType");
 
     private final String responseName;
     Responses(String responseName) {

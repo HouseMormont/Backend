@@ -442,10 +442,11 @@ public class Controller {
                 throw new Exception(format("Unable to generate and save token for user %s.", username));
             }
             User user = new User(username, password, authenticate.getAuthorities());
+            int type = mService.getUserTypeId(username);
 
             LOGGER.log(Level.ALL, "Username {0} authenticated with success", new Object[]{username});
 
-            JsonObject response = getAuthDetails(user);
+            JsonObject response = getAuthDetails(user, type);
             return new ResponseEntity<>(response.toString(), OK);
 
         } catch (Exception exception) {

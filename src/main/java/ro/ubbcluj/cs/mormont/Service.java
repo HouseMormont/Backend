@@ -387,4 +387,8 @@ public class Service {
         props.put("mail.smtp.port", "465");
         return props;
     }
+
+    public int getUserTypeId(String username) {
+        return DBHelper.getInstance().getUserTypeId(username);
+    }
 }
