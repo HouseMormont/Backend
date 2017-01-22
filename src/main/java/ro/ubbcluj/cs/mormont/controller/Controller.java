@@ -361,10 +361,10 @@ public class Controller {
             String username = ((User) auth.getPrincipal()).getUsername();
 
             mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
-            String doc = mService.getDocumentById(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
-            String docStarterUsername = new JsonParser().parse(doc).getAsJsonObject().get("username").getAsString();
+            //String doc = mService.getDocumentById(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
+           // String docStarterUsername = new JsonParser().parse(doc).getAsJsonObject().get("username").getAsString();
 
-            mService.sendMail(mService.getUserEmail(docStarterUsername), "UBB approval notification", "Your doc has been approved!! Check it now: https://localhost:8989");
+            //mService.sendMail(mService.getUserEmail(docStarterUsername), "UBB approval notification", "Your doc has been approved!! Check it now: https://localhost:8989");
             JsonObject response = new JsonObject();
 
             return new ResponseEntity<>(response.toString(), OK);
