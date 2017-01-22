@@ -277,4 +277,11 @@ public class DBHelper {
         String sql = "SELECT * FROM mormont.UserType";
         return  jdbcTemplate.queryForList(sql);
     }
+
+    public String getUsersEmail(String username) {
+        String sql = "SELECT * FROM  mormont.users where username = ?";
+        List<Map<String, Object>> row = jdbcTemplate.queryForList(sql, username);
+        return String.valueOf(row.get(0).get("email"));
+
+    }
 }

@@ -1,6 +1,7 @@
 package ro.ubbcluj.cs.mormont.controller;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -349,17 +350,17 @@ public class Controller {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
-
+            String docType = "DR";
             String username = ((User) auth.getPrincipal()).getUsername();
 
             String idDoc = request.getParameter("idDoc");
             String versionDoc = request.getParameter("versionDoc");
 
-            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), "DR");
+            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
+            String doc = mService.getDocumentById(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
+            String docStarterUsername = new JsonParser().parse(doc).getAsJsonObject().get("username").getAsString();
 
-            // TODO replace with users email
-            mService.sendMail("lucian.bredean@outlook.com", "UBB approval notification", "Your doc has been approved!! Check it now: https://localhost:8989");
-            // TODO populate this json with the response
+            mService.sendMail(mService.getUserEmail(docStarterUsername), "UBB approval notification", "Your doc has been approved!! Check it now: https://localhost:8989");
             JsonObject response = new JsonObject();
 
             return new ResponseEntity<>(response.toString(), OK);
@@ -644,8 +645,7 @@ public class Controller {
             String versionDoc = request.getParameter("verDoc");
             String docType = request.getParameter("docType");
 
-            //String doc = "HARDCODED VALUE";
-            String doc = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), docType);
+            String doc = mService.getDocumentById(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
 
             byte[] docAsPdf = mService.getDocumentAsPdf(doc, keyStoreLocation, keyStorePassword, keyStoreType);
 
