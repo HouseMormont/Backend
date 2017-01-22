@@ -350,8 +350,6 @@ public class Controller {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
-            String docType = "DR";
-            String username = ((User) auth.getPrincipal()).getUsername();
 
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(body);

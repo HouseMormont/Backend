@@ -1,6 +1,5 @@
 package ro.ubbcluj.cs.mormont.database;
 
-import org.jetbrains.annotations.Nullable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ro.ubbcluj.cs.mormont.Domain.User;
 import ro.ubbcluj.cs.mormont.database.tableHelpers.FacultatiHelper;
@@ -245,12 +244,6 @@ public class DBHelper {
         String sql = "SELECT * FROM mormont.referat_necesitate_simple where username = ?";
         return jdbcTemplate.queryForList(sql, username);
 
-    }
-
-
-    public List<Map<String, Object>> getAllDR() {
-        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple";
-        return jdbcTemplate.queryForList(sql);
     }
 
     public List<Map<String, Object>> getAllRN() {
