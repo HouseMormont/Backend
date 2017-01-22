@@ -75,11 +75,11 @@ public class Service {
 
     public void approveDocument(String username, int id, float versiune, String documentType) throws Exception {
         Map<String, Object> document = DBHelper.getInstance().getDocument(id, versiune, documentType);
-        int initiator = (int) document.get("id_initiator");
+        int initiator = (int) document.get("tip_initiator");
         int aprobare = (int) document.get("id_aprobare");
 
         if (isApprovalFinal(initiator, aprobare)) {
-            markDocumentFinalized();
+            markDocumentFinalized(id, versiune, documentType);
         } else {
             int nextApproval = getNextApproval(initiator, aprobare);
             if (nextApproval == -1) {
@@ -103,8 +103,8 @@ public class Service {
         return -1;
     }
 
-    private void markDocumentFinalized() throws Exception {
-        throw new Exception("Not implemented yet!");
+    private void markDocumentFinalized(int id, float versiune, String documentType) throws Exception {
+        DBHelper.getInstance().updateDocumentStatus(id, versiune, -1, documentType);
     }
 
     private boolean isApprovalFinal(int initiator, int aprobare) {
@@ -150,7 +150,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Dispozitia rectorului",
+                        getUserName(username), "Dispozitia rectorului",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -162,7 +162,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Referat necesitate",
+                        getUserName(username), "Referat necesitate",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -174,7 +174,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Dispozitia rectorului",
+                        getUserName(username), "Dispozitia rectorului",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -186,7 +186,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Referat necesitate",
+                        getUserName(username), "Referat necesitate",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -230,31 +230,32 @@ public class Service {
     }
 
     public String getAllDocumetsForReviewForList(String username) {
-        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDRForUser(username);
+        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDR();
         List<DocumentListItem> items = new ArrayList<>();
 
         int userAuthority = DBHelper.getInstance().getUserTypeId(username);
 
-        for (Map row : documents) {
-            if (row.get("id_aprobare") != null &&userAuthority == (int) row.get("id_aprobare")) {
-                DocumentListItem item = new DocumentListItem(
-                        (int) row.get("id_dispozitie"),
-                        (float) row.get("versiune"),
-                        (String) row.get("data"),
-                        "Dispozitia rectorului",
-                        getApprovalName((Integer) row.get("id_aprobare"))
-                );
-                items.add(item);
-            }
-        }
-        documents = DBHelper.getInstance().getAllRNForUser(username);
         for (Map row : documents) {
             if (row.get("id_aprobare") != null && userAuthority == (int) row.get("id_aprobare")) {
                 DocumentListItem item = new DocumentListItem(
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Referat necesitate",
+                        getUserName(username),
+                        "Dispozitia rectorului",
+                        getApprovalName((Integer) row.get("id_aprobare"))
+                );
+                items.add(item);
+            }
+        }
+        documents = DBHelper.getInstance().getAllRN();
+        for (Map row : documents) {
+            if (row.get("id_aprobare") != null && userAuthority == (int) row.get("id_aprobare")) {
+                DocumentListItem item = new DocumentListItem(
+                        (int) row.get("id_dispozitie"),
+                        (float) row.get("versiune"),
+                        (String) row.get("data"),
+                        getUserName(username), "Referat necesitate",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -386,5 +387,20 @@ public class Service {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.port", "465");
         return props;
+    }
+
+    private String getUserName(String username){
+        List<Map<String, Object>> users = DBHelper.getInstance().getAllUsers();
+
+        for(Map user: users){
+            if(user.get("username").toString().equals(username)){
+                return "" + user.get("nume") + " " + user.get("prenume");
+            }
+        }
+        return "";
+    }
+
+    public void reject(String username, int i, float v, String docType) {
+        DBHelper.getInstance().rejectDocument(i, v, docType);
     }
 }
