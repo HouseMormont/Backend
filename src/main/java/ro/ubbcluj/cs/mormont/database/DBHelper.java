@@ -1,5 +1,6 @@
 package ro.ubbcluj.cs.mormont.database;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ro.ubbcluj.cs.mormont.Domain.User;
 import ro.ubbcluj.cs.mormont.database.tableHelpers.FacultatiHelper;
@@ -14,6 +15,10 @@ public class DBHelper {
 
     private static DBHelper mInstance;
     private static JdbcTemplate jdbcTemplate;
+
+    public static final float VERSIUNE_APROBATA = 100.0f;
+    public static final float VERSIUNE_RESPINSA = 0.0f;
+
 
     String sql = "INSERT INTO mormont.users (username, password) VALUES (?,?)";
 
@@ -204,12 +209,27 @@ public class DBHelper {
 
 
     public void updateDocumentStatus(int id, float versiune, int nextApproval, String documentType) {
-        String sql = "UPDATE " + checkDocumentType(documentType) + " SET id_aprobare = " + nextApproval + " WHERE id_dispozitie = ? and versiune = ?";
+        String sql = "UPDATE " + checkDocumentType(documentType) + " SET id_aprobare = ";
 
+        if(nextApproval != -1) {
+         sql+=nextApproval;
+        } else {
+            sql += "NULL ";
+            sql += ", versiune = " + VERSIUNE_APROBATA;
+        }
+
+        sql += " WHERE id_dispozitie = ? and ROUND(versiune, 1) = ROUND(?, 1)";
         jdbcTemplate.update(sql, new Object[]{id, versiune});
 
     }
 
+
+    public void rejectDocument(int id, float versiune, String docType){
+        String sql = "UPDATE " + checkDocumentType(docType) + " SET id_aprobare = NULL, versiune = " + VERSIUNE_RESPINSA;
+        sql += " WHERE id_dispozitie = ? and ROUND(versiune, 1) = ROUND(?, 1)";
+
+        jdbcTemplate.update(sql, new Object[]{id, versiune});
+    }
 
     public List<Map<String, Object>> getAllDRForUser(String username) {
         String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple where username = ?";
@@ -220,6 +240,19 @@ public class DBHelper {
     public List<Map<String, Object>> getAllRNForUser(String username) {
         String sql = "SELECT * FROM mormont.referat_necesitate_simple where username = ?";
         return jdbcTemplate.queryForList(sql, username);
+
+    }
+
+
+    public List<Map<String, Object>> getAllDR() {
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple";
+        return jdbcTemplate.queryForList(sql);
+    }
+
+
+    public List<Map<String, Object>> getAllRN() {
+        String sql = "SELECT * FROM mormont.referat_necesitate_simple";
+        return jdbcTemplate.queryForList(sql);
 
     }
 
