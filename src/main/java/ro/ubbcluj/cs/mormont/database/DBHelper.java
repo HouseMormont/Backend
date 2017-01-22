@@ -216,10 +216,20 @@ public class DBHelper {
         return jdbcTemplate.queryForList(sql, username);
     }
 
+    public List<Map<String, Object>> getAllDR() {
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple";
+        return jdbcTemplate.queryForList(sql);
+    }
 
     public List<Map<String, Object>> getAllRNForUser(String username) {
         String sql = "SELECT * FROM mormont.referat_necesitate_simple where username = ?";
         return jdbcTemplate.queryForList(sql, username);
+
+    }
+
+    public List<Map<String, Object>> getAllRN() {
+        String sql = "SELECT * FROM mormont.referat_necesitate_simple";
+        return jdbcTemplate.queryForList(sql);
 
     }
 

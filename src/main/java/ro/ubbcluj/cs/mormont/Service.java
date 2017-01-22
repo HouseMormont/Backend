@@ -248,7 +248,7 @@ public class Service {
     }
 
     public String getAllDocumetsForReviewForList(String username) {
-        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDRForUser(username);
+        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDR();
         List<DocumentListItem> items = new ArrayList<>();
 
         int userAuthority = DBHelper.getInstance().getUserTypeId(username);
@@ -265,7 +265,7 @@ public class Service {
                 items.add(item);
             }
         }
-        documents = DBHelper.getInstance().getAllRNForUser(username);
+        documents = DBHelper.getInstance().getAllRN();
         for (Map row : documents) {
             if (row.get("id_aprobare") != null && userAuthority == (int) row.get("id_aprobare")) {
                 DocumentListItem item = new DocumentListItem(
