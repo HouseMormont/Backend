@@ -28,6 +28,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static ro.ubbcluj.cs.mormont.entity.Headers.PASSWORD;
 import static ro.ubbcluj.cs.mormont.entity.Headers.USERNAME;
+import static ro.ubbcluj.cs.mormont.entity.Responses.MESSAGE;
 import static ro.ubbcluj.cs.mormont.utils.InputsUtil.getRequiredHeader;
 import static ro.ubbcluj.cs.mormont.utils.OutputsUtil.*;
 
@@ -54,8 +55,11 @@ public class Controller {
     private static final String REJECT_DOC = "/rejectDoc";
     private static final String REVISE_DOC = "/reviseDoc";
     private static final String AUTHORIZATION = "/login";
+    private static final String INVALIDATE_SESSION = "/invalidate";
     private static final String FINALIZARE = "/finalizare";
     private static final String DOCS_TO_REVIEW = "/getDocumentsToReview";
+    private static final String DOWNLOAD = "/downloadPdf";
+
     private static final String CREATE_USER = "/createUser";
     private static final String DELETE_USER = "/deleteUser";
     private static final String GET_ALL_USERS = "/getAllUsers";
@@ -93,7 +97,7 @@ public class Controller {
     }
 
     @RequestMapping(value = SAVE_DISPOZITIA_RECTORULUI, produces = "application/json", method = POST)
-    public ResponseEntity<String> saveDispozitiaRectorului(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> saveDispozitiaRectorului(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
@@ -101,12 +105,17 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
-            String jsonDocument = request.getParameter("jsonDoc");
 
-            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), "DR");
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            int idDoc = (int)json.get("idDoc");
+            double versionDoc = (double)json.get("versionDoc");
+            String jsonDocument = json.get("jsonDoc").toString();
+
+            mService.updateDocument(username, jsonDocument, (float)versionDoc, idDoc, "DR");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -121,7 +130,7 @@ public class Controller {
     }
 
     @RequestMapping(value = SAVE_REFERAT_NECESITATE, produces = "application/json", method = POST)
-    public ResponseEntity<String> saveReferatNecesitate(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> saveReferatNecesitate(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
@@ -129,12 +138,16 @@ public class Controller {
 
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
-            String jsonDocument = request.getParameter("jsonDoc");
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
 
-            mService.updateDocument(username, jsonDocument, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), "RN");
+
+            // idDoc/versionDoc/jsonDocument are null if they are not passed as parameters in the request
+            int idDoc = (int)json.get("idDoc");
+            double versionDoc = (double)json.get("versionDoc");
+            String jsonDocument = json.get("jsonDoc").toString();
+
+            mService.updateDocument(username, jsonDocument, (float) (versionDoc), idDoc, "RN");
 
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
@@ -164,7 +177,9 @@ public class Controller {
             String versionDoc = json.getAsString("verDoc");
             String docType = json.getAsString("docType");
 
-            return new ResponseEntity<>(mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc),docType), OK);
+            String documentById = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), docType);
+
+            return new ResponseEntity<>(documentById, OK);
 
             // TODO populate this json with the response
 
@@ -329,19 +344,26 @@ public class Controller {
 
 
     @RequestMapping(value = APPROVE_DOC, produces = "application/json", method = POST)
-    public ResponseEntity<String> approveDocument(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> approveDocument(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("versionDoc");
+            String docType = json.getAsString("docType");
+
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
+            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
 
-            mService.approveDocument(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), "DR");
-
+            // TODO replace with users email
+            mService.sendMail("lucian.bredean@outlook.com", "UBB approval notification", "Your doc has been approved!! Check it now: https://localhost:8989");
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
 
@@ -380,16 +402,22 @@ public class Controller {
     }
 
     @RequestMapping(value = REJECT_DOC, produces = "application/json", method = POST)
-    public ResponseEntity<String> rejectDocument(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> rejectDocument(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("versionDoc");
+            String docType = json.getAsString("docType");
+
             String username = ((User) auth.getPrincipal()).getUsername();
 
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
+            mService.reject(username, Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
 
 
             // TODO populate this json with the response
@@ -589,6 +617,52 @@ public class Controller {
 
             JsonObject response = getExceptionDetails(exception);
             return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+    @RequestMapping(value = INVALIDATE_SESSION, produces = "application/json", method = POST)
+    public ResponseEntity<String> invalidateSession(Authentication auth) {
+        try {
+            if (auth == null) {
+                return getUnauthorizedResponse();
+            }
+            SecurityContextHolder.getContext().setAuthentication(null);
+            JsonObject response = new JsonObject();
+            response.addProperty(MESSAGE.getValue(), "Success");
+
+            return new ResponseEntity<>(response.toString(), OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to invalidate session:", exception);
+
+            JsonObject response = getExceptionDetails(exception);
+            return new ResponseEntity<>(response.toString(), BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = DOWNLOAD, produces = "application/pdf", method = GET)
+    public ResponseEntity<byte[]> downloadDoc(HttpServletRequest request, Authentication auth) {
+        try {
+            String keyStoreLocation = "keystore.p12";
+            String keyStorePassword = "changeit";
+            String keyStoreType = "PKCS12";
+            if (auth == null) {
+                return new ResponseEntity<>(UNAUTHORIZED);
+            }
+            String username = ((User) auth.getPrincipal()).getUsername();
+
+            String idDoc = request.getParameter("idDoc");
+            String versionDoc = request.getParameter("verDoc");
+            String docType = request.getParameter("docType");
+
+            //String doc = "HARDCODED VALUE";
+            String doc = mService.getDocumentById(username, Float.parseFloat(versionDoc), Integer.parseInt(idDoc), docType);
+
+            byte[] docAsPdf = mService.getDocumentAsPdf(doc, keyStoreLocation, keyStorePassword, keyStoreType);
+
+            return new ResponseEntity<>(docAsPdf, OK);
+        } catch (Exception exception) {
+            LOGGER.log(SEVERE, "Failed to download document:", exception);
+
+            return new ResponseEntity<>(BAD_REQUEST);
         }
     }
 }

@@ -101,8 +101,64 @@
             <artifactId>json-smart</artifactId>
             <version>RELEASE</version>
         </dependency>
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.4</version>
+		</dependency>
 
-        <!-- We might need this dependency for csrf??? -->
+		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox-examples -->
+		<!-- nobody got time for cp paste -->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox-examples</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.ant/ant -->
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.9.6</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.7.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.7.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/xmpbox -->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>xmpbox</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcmail-jdk15on -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcmail-jdk15on</artifactId>
+			<version>1.54</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.5.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.5.5</version>
+		</dependency>
+
+
+		<!-- We might need this dependency for csrf??? -->
 		<!--<dependency>
 			<groupId>com.allanditzel</groupId>
 			<artifactId>spring-security-csrf-token-filter</artifactId>

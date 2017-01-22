@@ -1,20 +1,43 @@
 package ro.ubbcluj.cs.mormont;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.pdfbox.examples.signature.CreateSignature;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.jetbrains.annotations.NotNull;
 import ro.ubbcluj.cs.mormont.controller.Controller;
 import ro.ubbcluj.cs.mormont.database.DBHelper;
 import ro.ubbcluj.cs.mormont.entity.DocumentListItem;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by tudorlozba on 04/01/2017.
  */
 public class Service {
+
+    public static final String MAIL_USER = "cinemaflorinalin@gmail.com";
+    public static final String MAIL_PASSWORD = "changeit";
 
     public void createNewDocument(String username, String document, String documentType) {
 
@@ -52,11 +75,11 @@ public class Service {
 
     public void approveDocument(String username, int id, float versiune, String documentType) throws Exception {
         Map<String, Object> document = DBHelper.getInstance().getDocument(id, versiune, documentType);
-        int initiator = (int) document.get("id_initiator");
+        int initiator = (int) document.get("tip_initiator");
         int aprobare = (int) document.get("id_aprobare");
 
         if (isApprovalFinal(initiator, aprobare)) {
-            markDocumentFinalized();
+            markDocumentFinalized(id, versiune, documentType);
         } else {
             int nextApproval = getNextApproval(initiator, aprobare);
             if (nextApproval == -1) {
@@ -80,8 +103,8 @@ public class Service {
         return -1;
     }
 
-    private void markDocumentFinalized() throws Exception {
-        throw new Exception("Not implemented yet!");
+    private void markDocumentFinalized(int id, float versiune, String documentType) throws Exception {
+        DBHelper.getInstance().updateDocumentStatus(id, versiune, -1, documentType);
     }
 
     private boolean isApprovalFinal(int initiator, int aprobare) {
@@ -104,10 +127,13 @@ public class Service {
 
     public String getDocumentById(String username, float versiune, int idDocument,String docType) {
         List<Map<String, Object>> documents = DBHelper.getInstance().getAllDocumentsForUser(username,docType);
-        Gson gson = new Gson();
         for (Map row : documents) {
-            if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune)
-                return gson.toJson(row);
+            if ((Integer) row.get("id_dispozitie") == idDocument && (Float) row.get("versiune") == versiune) {
+                JsonParser parser = new JsonParser();
+                JsonObject obj = parser.parse(String.valueOf(row.get("documentJson"))).getAsJsonObject();
+                row.put("documentJson", obj);
+                return new Gson().toJson(row);
+            }
         }
 
         return null;
@@ -124,7 +150,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Dispozitia rectorului",
+                        getUserName(username), "Dispozitia rectorului",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -136,7 +162,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Referat necesitate",
+                        getUserName(username), "Referat necesitate",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -148,7 +174,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Dispozitia rectorului",
+                        getUserName(username), "Dispozitia rectorului",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -160,7 +186,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Referat necesitate",
+                        getUserName(username), "Referat necesitate",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -204,31 +230,32 @@ public class Service {
     }
 
     public String getAllDocumetsForReviewForList(String username) {
-        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDRForUser(username);
+        List<Map<String, Object>> documents = DBHelper.getInstance().getAllDR();
         List<DocumentListItem> items = new ArrayList<>();
 
         int userAuthority = DBHelper.getInstance().getUserTypeId(username);
 
         for (Map row : documents) {
-            if (userAuthority == (int) row.get("id_aprobare")) {
+            if (row.get("id_aprobare") != null && userAuthority == (int) row.get("id_aprobare")) {
                 DocumentListItem item = new DocumentListItem(
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
+                        getUserName(username),
                         "Dispozitia rectorului",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
             }
         }
-        documents = DBHelper.getInstance().getAllRNForUser(username);
+        documents = DBHelper.getInstance().getAllRN();
         for (Map row : documents) {
-            if (userAuthority == (int) row.get("id_aprobare")) {
+            if (row.get("id_aprobare") != null && userAuthority == (int) row.get("id_aprobare")) {
                 DocumentListItem item = new DocumentListItem(
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        "Referat necesitate",
+                        getUserName(username), "Referat necesitate",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
@@ -237,6 +264,62 @@ public class Service {
 
         Gson gson = new Gson();
         return gson.toJson(items);
+    }
+
+    public byte[] getDocumentAsPdf(String doc, String keyStoreLocation, String keyStorePassword, String keyStoreType) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        String tempName = String.valueOf(UUID.randomUUID())+".pdf";
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+
+        PDFont font = PDType1Font.HELVETICA_BOLD;
+
+        PDPageContentStream contents = new PDPageContentStream(document, page);
+        contents.beginText();
+        contents.setFont(font, 12);
+        contents.newLineAtOffset(100, 700);
+        contents.showText(doc);
+        contents.endText();
+        contents.close();
+        document.addPage(page);
+
+        document.save(tempName);
+        document.close();
+
+        File tempFile = new File(tempName);
+
+        document = PDDocument.load(tempFile);
+
+        PDSignature pdSignature = getPdSignature();
+
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        char[] password = keyStorePassword.toCharArray();
+        keyStore.load(new FileInputStream(keyStoreLocation), password);
+
+        CreateSignature pdfSigner = new CreateSignature(keyStore, password);
+        pdfSigner.setExternalSigning(false);
+        pdfSigner.setTsaClient(null);
+        document.addSignature(pdSignature, pdfSigner);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        document.saveIncremental(byteArrayOutputStream);
+
+        document.close();
+        if (!tempFile.delete()) {
+            //TODO unable to cleanup
+        }
+
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private PDSignature getPdSignature() {
+        PDSignature signature = new PDSignature();
+        signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
+        signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
+        signature.setName("Mormont Application");
+        signature.setLocation("Cluj-Napoca, Romania");
+        signature.setReason("Valid document.");
+        signature.setSignDate(Calendar.getInstance());
+        return signature;
     }
 
     public String getAllUsers(){
@@ -274,5 +357,50 @@ public class Service {
 
     public void deleteUsername(String username){
         DBHelper.getInstance().deleteUser(username);
+    }
+
+    public void sendMail(String username, String subject, String body) throws MessagingException {
+        Properties props = getMailProperties();
+
+        Session session = Session.getDefaultInstance(props,
+                new Authenticator() {
+                    protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(MAIL_USER, MAIL_PASSWORD);
+                    }
+                });
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(MAIL_USER));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(username));
+        message.setSubject(subject);
+        message.setText(body);
+
+        Transport.send(message);
+    }
+
+    @NotNull
+    private static Properties getMailProperties() {
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.socketFactory.class",
+                "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.port", "465");
+        return props;
+    }
+
+    private String getUserName(String username){
+        List<Map<String, Object>> users = DBHelper.getInstance().getAllUsers();
+
+        for(Map user: users){
+            if(user.get("username").toString().equals(username)){
+                return "" + user.get("nume") + " " + user.get("prenume");
+            }
+        }
+        return "";
+    }
+
+    public void reject(String username, int i, float v, String docType) {
+        DBHelper.getInstance().rejectDocument(i, v, docType);
     }
 }
