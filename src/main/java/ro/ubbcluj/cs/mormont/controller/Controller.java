@@ -377,20 +377,25 @@ public class Controller {
     }
 
     @RequestMapping(value = REVISE_DOC, produces = "application/json", method = POST)
-    public ResponseEntity<String> reviseDocument(Authentication auth, HttpServletRequest request) {
+    public ResponseEntity<String> reviseDocument(@RequestBody String body, Authentication auth, HttpServletRequest request) {
         try {
             if (auth == null) {
                 return getUnauthorizedResponse();
             }
 
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(body);
+
+            String idDoc = json.getAsString("idDoc");
+            String versionDoc = json.getAsString("versionDoc");
+            String docType = json.getAsString("docType");
+
             String username = ((User) auth.getPrincipal()).getUsername();
-
-            String idDoc = request.getParameter("idDoc");
-            String versionDoc = request.getParameter("versionDoc");
-
-
             // TODO populate this json with the response
             JsonObject response = new JsonObject();
+
+            mService.revise(Integer.parseInt(idDoc), Float.parseFloat(versionDoc), docType);
 
             return new ResponseEntity<>(response.toString(), OK);
         } catch (Exception exception) {
