@@ -1,6 +1,5 @@
 package ro.ubbcluj.cs.mormont.database;
 
-import org.jetbrains.annotations.Nullable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ro.ubbcluj.cs.mormont.Domain.User;
 import ro.ubbcluj.cs.mormont.database.tableHelpers.FacultatiHelper;
@@ -243,19 +242,16 @@ public class DBHelper {
         return jdbcTemplate.queryForList(sql, username);
     }
 
+    public List<Map<String, Object>> getAllDR() {
+        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple";
+        return jdbcTemplate.queryForList(sql);
+    }
 
     public List<Map<String, Object>> getAllRNForUser(String username) {
         String sql = "SELECT * FROM mormont.referat_necesitate_simple where username = ?";
         return jdbcTemplate.queryForList(sql, username);
 
     }
-
-
-    public List<Map<String, Object>> getAllDR() {
-        String sql = "SELECT * FROM mormont.Dispozitia_Rectorului_Simple";
-        return jdbcTemplate.queryForList(sql);
-    }
-
 
     public List<Map<String, Object>> getAllRN() {
         String sql = "SELECT * FROM mormont.referat_necesitate_simple";
@@ -282,11 +278,11 @@ public class DBHelper {
         return (String) row.get(0).get("username");
     }
 
-    public void saveNewUser(String username, String password, String firstName, String lastName, int authority, int function, int type) {
-        String sql = "INSERT INTO Users" +
-                " (username, password, nume, prenume, authority, functie, type) VALUES (?,?,?,?,?,?,?)";
+    public void saveNewUser(String username, String password, String firstName, String lastName, int authority, String email, int function, int type) {
+        String sql = "INSERT INTO mormont.Users" +
+                " (username, password, nume, prenume, authority, functie, type, email) VALUES (?,?,?,?,?,?,?,?)";
 
-        jdbcTemplate.update(sql, new Object[]{username, password, lastName, firstName, authority, function, type});
+        jdbcTemplate.update(sql, new Object[]{username, password, lastName, firstName, authority, function, type, email});
     }
 
 
@@ -304,7 +300,7 @@ public class DBHelper {
     }
 
     public void deleteUser(String username){
-        String sql = "DELETE FROM Users where username = ?";
+        String sql = "DELETE FROM mormont.Users where username = ?";
         jdbcTemplate.update(sql, new Object[]{username});
     }
 
@@ -323,5 +319,11 @@ public class DBHelper {
         sql += " WHERE id_dispozitie = ? and ROUND(versiune, 1) = ROUND(?, 1)";
 
         jdbcTemplate.update(sql, new Object[]{id, versiune});
+    }
+  public String getUsersEmail(String username) {
+        String sql = "SELECT * FROM  mormont.users where username = ?";
+        List<Map<String, Object>> row = jdbcTemplate.queryForList(sql, username);
+        //return String.valueOf(row.get(0).get("email"));
+        return "yusty95sv@yahoo.com";
     }
 }
