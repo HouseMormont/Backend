@@ -272,8 +272,8 @@ public class DBHelper {
     }
 
     public void saveNewUser(String username, String password, String firstName, String lastName, int authority, String email, int function, int type) {
-        String sql = "INSERT INTO Users" +
-                " (username, password, nume, prenume, authority, functie, type, email) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO mormont.Users" +
+                " (username, password, nume, prenume, authority, functie, type, email) VALUES (?,?,?,?,?,?,?,?)";
 
         jdbcTemplate.update(sql, new Object[]{username, password, lastName, firstName, authority, function, type, email});
     }
@@ -293,7 +293,7 @@ public class DBHelper {
     }
 
     public void deleteUser(String username){
-        String sql = "DELETE FROM Users where username = ?";
+        String sql = "DELETE FROM mormont.Users where username = ?";
         jdbcTemplate.update(sql, new Object[]{username});
     }
 
@@ -310,7 +310,7 @@ public class DBHelper {
     public String getUsersEmail(String username) {
         String sql = "SELECT * FROM  mormont.users where username = ?";
         List<Map<String, Object>> row = jdbcTemplate.queryForList(sql, username);
-        return String.valueOf(row.get(0).get("email"));
-
+        //return String.valueOf(row.get(0).get("email"));
+        return "yusty95sv@yahoo.com";
     }
 }
