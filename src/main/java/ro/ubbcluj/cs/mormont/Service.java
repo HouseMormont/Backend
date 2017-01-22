@@ -251,7 +251,7 @@ public class Service {
         List<Map<String, Object>> documents = DBHelper.getInstance().getAllDR();
         List<DocumentListItem> items = new ArrayList<>();
 
-        int userAuthority = DBHelper.getInstance().getUserTypeId(username);
+        int userAuthority = DBHelper.getInstance().getUserAuthority(username);
 
         for (Map row : documents) {
             if (row.get("id_aprobare") != null && userAuthority == (int) row.get("id_aprobare")) {
