@@ -10,10 +10,14 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.jetbrains.annotations.NotNull;
 import ro.ubbcluj.cs.mormont.controller.Controller;
 import ro.ubbcluj.cs.mormont.database.DBHelper;
 import ro.ubbcluj.cs.mormont.entity.DocumentListItem;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +35,9 @@ import java.util.*;
  * Created by tudorlozba on 04/01/2017.
  */
 public class Service {
+
+    public static final String MAIL_USER = "cinemaflorinalin@gmail.com";
+    public static final String MAIL_PASSWORD = "changeit";
 
     public void createNewDocument(String username, String document, String documentType) {
 
@@ -349,5 +356,35 @@ public class Service {
 
     public void deleteUsername(String username){
         DBHelper.getInstance().deleteUser(username);
+    }
+
+    public void sendMail(String username, String subject, String body) throws MessagingException {
+        Properties props = getMailProperties();
+
+        Session session = Session.getDefaultInstance(props,
+                new Authenticator() {
+                    protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(MAIL_USER, MAIL_PASSWORD);
+                    }
+                });
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(MAIL_USER));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(username));
+        message.setSubject(subject);
+        message.setText(body);
+
+        Transport.send(message);
+    }
+
+    @NotNull
+    private static Properties getMailProperties() {
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.socketFactory.class",
+                "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.port", "465");
+        return props;
     }
 }
