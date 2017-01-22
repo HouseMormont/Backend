@@ -561,12 +561,12 @@ public class Controller {
             String password = json.getAsString("password");
             String firstName = json.getAsString("firstName");
             String lastName = json.getAsString("lastName");
-            String email = json.getAsString("email");
-            int authority = (int)json.getAsNumber("authority");
-            int functie = (int)json.getAsNumber("functie");
-            int type = (int)json.getAsNumber("type");
+//            String email = json.getAsString("email");
+            int authority = Integer.parseInt((String) json.get("authority"));
+            int functie = Integer.parseInt((String) json.get("functie"));
+            int type = Integer.parseInt((String) json.get("type"));
 
-            mService.createUser(username, password, firstName, lastName, email, authority, functie, type);
+            mService.createUser(username, password, firstName, lastName, firstName.toLowerCase() + "." +lastName.toLowerCase() + "@ubbcluj.ro", authority, functie, type);
 
             JsonObject response = new JsonObject();
 
