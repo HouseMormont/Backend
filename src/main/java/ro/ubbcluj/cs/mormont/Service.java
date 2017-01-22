@@ -249,7 +249,7 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        getUserName(username),
+                        getUserName((String)row.get("username")),
                         "Dispozitia rectorului",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
@@ -263,7 +263,8 @@ public class Service {
                         (int) row.get("id_dispozitie"),
                         (float) row.get("versiune"),
                         (String) row.get("data"),
-                        getUserName(username), "Referat necesitate",
+                        getUserName((String)row.get("username")),
+                        "Referat necesitate",
                         getApprovalName((Integer) row.get("id_aprobare"))
                 );
                 items.add(item);
