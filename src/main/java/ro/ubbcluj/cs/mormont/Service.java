@@ -57,7 +57,7 @@ public class Service {
     }
 
     public void startDocumentFlow(int id, float versiune, String username, String documentType) {
-        float newVersion = (float) 1.0;
+        float newVersion = (float) 1.0 + (int)versiune;
         int aprobare = getFirstApprovalNeededForDocument(DBHelper.getInstance().getUserTypeId(username),documentType);
 
 
